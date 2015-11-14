@@ -109,15 +109,15 @@ class AI(BaseAI):
 
     def warehouse_safety_check(self):
         #FIXME: Check wind intesnity / possible directions
-        if self._hq.building_east.fire > self.__firethreshold:
+        if self._hq.building_east().fire > self.__firethreshold:
             #FIXME: create array of directions internally
-            self._hq.building_east.fire.put_out_fire()
+            self._hq.building_east().fire.put_out_fire(self.player.fire_departments)
             
-        if self._hq.building_west.fire > self.__firethreshold:
-            self._hq.building_west.fire.put_out_fire()
+        if self._hq.building_west().fire > self.__firethreshold:
+            self._hq.building_west().fire.put_out_fire(self.player.fire_departments)
 
-        if self._hq.building_south.fire > self.__firethreshold:
-            self._hq.building_south.fire.put_out_fire()
+        if self._hq.building_south().fire > self.__firethreshold:
+            self._hq.building_south().fire.put_out_fire(self.player.fire_departments)
 
-        if self._hq.building_north.fire > self.__firethreshold:
-            self._hq.building_north.fire.put_out_fire()
+        if self._hq.building_north().fire > self.__firethreshold:
+            self._hq.building_north().fire.put_out_fire(self.player.fire_departments)
