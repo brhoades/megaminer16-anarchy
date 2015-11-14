@@ -6,7 +6,6 @@ class AI(BaseAI):
     """ the basic AI functions that are the same between games
     """
 
-
     def get_name(self):
         """ this is the name you send to the server to play as.
 
@@ -19,6 +18,11 @@ class AI(BaseAI):
     def start(self):
         """ this is called once the game starts and your AI knows its player.id and game. You can initialize your AI here.
         """
+        self._hq = None
+        
+        for warehouse in self.player.warehouses:
+            if warehouse.is_headquarters:
+                self._hq = warehouse
 
 
     def game_updated(self):
