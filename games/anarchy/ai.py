@@ -110,6 +110,6 @@ class AI(BaseAI):
     def warehouse_safety_check(self):
         for building in self.get_side():
             #FIXME: Check wind intesnity / possible directions
-            if building.fire > self.__firethreshold
+            if building.fire > self.__firethreshold:
                 #FIXME: create array of directions internally
                 building.fire.put_out_fire(self.player.fire_departments)
