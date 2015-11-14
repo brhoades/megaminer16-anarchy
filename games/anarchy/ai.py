@@ -111,5 +111,5 @@ class AI(BaseAI):
         for building in self._hq.get_sides():
             #FIXME: Check wind intesnity / possible directions
             if building.fire > self.__firethreshold:
-                #FIXME: create array of directions internally
-                building.fire.put_out_fire(self.player.fire_departments)
+                # FIXME: create array of directions internally
+                building.put_out_fire(self.player.fire_departments)
