@@ -30,7 +30,7 @@ class Building(GameObject):
         self._owner = None
         self._x = 0
         self._y = 0
-
+        self._sides = None
 
 
     @property
@@ -110,6 +110,11 @@ class Building(GameObject):
         return self._y
 
 
+    @property
+    def get_sides(self):
+        """List of adjacent buildings
+        """
+        return [self._building_east,self._building_north,self._building_south,self._building_west]
 
     # <<-- Creer-Merge: functions -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
     # if you want to add any client side logic (such as state checking functions) this is where you can add them
