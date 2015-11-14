@@ -108,7 +108,7 @@ class AI(BaseAI):
         return (building.health > 0 and not building.bribed and building.owner == self.game.current_player)
 
     def warehouse_safety_check(self):
-        for building in self.get_side():
+        for building in self._hq.get_sides():
             #FIXME: Check wind intesnity / possible directions
             if building.fire > self.__firethreshold:
                 #FIXME: create array of directions internally
