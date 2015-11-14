@@ -18,6 +18,8 @@ class AI(BaseAI):
     def start(self):
         """ this is called once the game starts and your AI knows its player.id and game. You can initialize your AI here.
         """
+        # configurable parameters
+        self.__firethreshold = 1
         self._hq = None
         
         for warehouse in self.player.warehouses:
@@ -46,6 +48,7 @@ class AI(BaseAI):
             bool: represents if you want to end your turn. true means end the turn, false means to keep your turn going and re-call runTurn()
         """
         # Put your game logic here for runTurn
+        self.warehouse_safety_check()
 
         # get my first warehouse
         first_warehouse = self.player.warehouses[0]
@@ -104,3 +107,17 @@ class AI(BaseAI):
         # building can only be bribed if health is greater than 0, it hasn't already been bribed, and you own it
         return (building.health > 0 and not building.bribed and building.owner == self.game.current_player)
 
+    def warehouse_safety_check(self):
+        #FIXME: Check wind intesnity / possible directions
+        if self._hq.building_east.fire > self.__firethreshold:
+            #FIXME: create array of directions internally
+            self._hq.building_east.fire.put_out_fire()
+            
+        if self._hq.building_west.fire > self.__firethreshold:
+            self._hq.building_west.fire.put_out_fire()
+
+        if self._hq.building_south.fire > self.__firethreshold:
+            self._hq.building_south.fire.put_out_fire()
+
+        if self._hq.building_north.fire > self.__firethreshold:
+            self._hq.building_north.fire.put_out_fire()
