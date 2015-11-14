@@ -110,7 +110,6 @@ class Building(GameObject):
         return self._y
 
 
-    @property
     def get_sides(self):
         """List of adjacent buildings
         """
