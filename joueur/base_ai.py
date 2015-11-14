@@ -26,10 +26,10 @@ class BaseAI:
 
         if callback != None:
             # this is broken af
-            #try:
-            return callback(*arguments)
-            #except:
-                #handle_error(ErrorCode.ai_errored, sys.exc_info()[0], "AI caused exception while trying to execute order '" + order + "'.")
+            try:
+                return callback(*arguments)
+            except:
+                handle_error(ErrorCode.ai_errored, sys.exc_info(), "AI caused exception while trying to execute order '" + order + "'.")
         else:
             handle_error(ErrorCode.reflection_failed, message="AI has no function '" + order + "' to respond with")
 

@@ -95,7 +95,7 @@ def wait_for_events():
             except socket.timeout:
                 pass # timed out so keyboard/system interupts can be handled, hence the while true loop above
             except socket.error as e:
-                handle_error(ErrorCode.cannot_read_socket, e, "Error reading socket while waiting for events")
+                handle_error(ErrorCode.cannot_read_socket, [e], "Error reading socket while waiting for events")
 
             if not sent:
                 continue
@@ -109,7 +109,7 @@ def wait_for_events():
                 try:
                     parsed = json.loads(json_str)
                 except ValueError as e:
-                    handle_error(ErrorCode.malformed_json, e, "Could not parse json '" + json_str + "'")
+                    handle_error(ErrorCode.malformed_json, [e], "Could not parse json '" + json_str + "'")
 
                 _client._events_stack.append(parsed)
 
