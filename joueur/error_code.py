@@ -20,25 +20,20 @@ class ErrorCode(Enum):
     unauthenticated = 31
     ai_errored = 42
 
-def handle_error(code, stack=[], message=None):
-    for e in stack:
-        if isinstance(e, SystemExit) or isinstance(e, KeyboardInterrupt): # we accidentally caught an exit exception, just re-throw it till it gets to the end of the runtime stack
-            sys.exit(e.code)
+def handle_error(code, e=None, message=None):
+    if isinstance(e, SystemExit) or isinstance(e, KeyboardInterrupt): # we accidentally caught an exit exception, just re-throw it till it gets to the end of the runtime stack
+        sys.exit(e.code)
 
-        print("\n\n")
-        print("----EXCEPTION----")
-        print("\n\n")
+    joueur.client.disconnect()
 
-        joueur.client.disconnect()
+    sys.stderr.write("Error: " + code.name + "\n---\n")
 
-        sys.stderr.write("Error: " + code.name + "\n---\n")
+    if message:
+        sys.stderr.write(message + "\n---\n")
 
-        if message:
-            sys.stderr.write(message + "\n---\n")
+    if e:
+        sys.stderr.write(str(e) + "\n---\n")
 
-        if e:
-            sys.stderr.write(str(e) + "\n---\n")
-
-        traceback.print_stack()
-        print("---")
-        #os._exit(code.value)
+    traceback.print_stack()
+    print("---")
+    os._exit(code.value)
