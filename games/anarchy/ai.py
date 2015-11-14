@@ -13,7 +13,7 @@ class AI(BaseAI):
         Returns
             str: the name you want your player to have
         """
-        return "Anarchy Python ShellAI" # REPLACE THIS WITH YOUR TEAM NAME
+        return "ᶘ ᵒᴥᵒᶅ WOW" # REPLACE THIS WITH YOUR TEAM NAME
 
 
     def start(self):
