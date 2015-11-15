@@ -148,5 +148,5 @@ class Building(GameObject):
         """
         for dep in ai.player.fire_departments:
             if self.needs_extinguish and dep.is_usable \
-                and ai.player.bribes_remaining < ai._max_bribes*ai._fireAllotment:
+                and ai.player.bribes_remaining > ai._max_bribes*(1-ai._fireAllotment):
                 dep.extinguish(self)
