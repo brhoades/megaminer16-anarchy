@@ -80,7 +80,7 @@ class AI(BaseAI):
         ohq = self.other_player.headquarters
         hq = self.player.headquarters
         sides = 0
-        f = self.game.current_forecast
+        f = self.game.next_forecast.direction
 
         for s in ohq.get_sides():
             if s is not None:
@@ -155,13 +155,19 @@ class AI(BaseAI):
             # in alley
             #############################
             if ohq.building_north is None and ohq.building_south is None:
-                if f == "north":
-                    pass # change
-                elif f == "south": 
-                    pass #change
-
+                if hq.building_east is None or hq.building_east.fire <= hq.building_west.fire:
+                    self.change_wind("west")
+                    return ohq.building_east
+                else:
+                    self.change_wind("east")
+                    return ohq.building_west
             if ohq.building_west is None and ohq.building_east is None:
-                pass
+                if hq.building_north is None or hq.building_north.fire <= hq.building_south.fire:
+                    self.change_wind("south")
+                    return ohq.building_north
+                else:
+                    self.change_wind("next")
+                    return ohq.building_south
 
 
 
@@ -186,9 +192,9 @@ class AI(BaseAI):
         return None
 
     def change_wind(self, dir):
-        if self.game.current_forecast == dir:
+        if self.game.next_forecast.direction == dir:
             return
-        f = self.game.current_forecast
+        f = self.game.next_forecast.direction
         dirs = ["north", "west", "south", "east", "north"]
 
         for w in self.player.weather_stations:
