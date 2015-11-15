@@ -34,6 +34,8 @@ class AI(BaseAI):
         # print header, newline is provided by the run_turn func
         print(self._green + "WA/FD/PD/WS\t" + self._red + "WA/FD/PD/WS\t" + self._black + "BRIBES\t" + self._green + "HQ\t" + self._red +"HQ\t" + self._black + "|PHASE|ACTIONS|PHASE|...")
 
+        self._warehouse_from_hq = {}
+
     def game_updated(self):
         """ this is called every time the game's state updates, so if you are tracking anything you can update it here.
         """
@@ -326,10 +328,12 @@ class AI(BaseAI):
         In a vain attempt to scare shellai-like ais, let's light the enemy hq's surrounding tiles where possible
         """
         warehouse_by_dist = dict()
-        for wh in self.player.warehouses:
-            if not wh.is_headquarters:
-                warehouse_by_dist[wh] = abs(wh.x - self.player.headquarters.x) + abs(wh.y - self.player.headquarters.y)
-        for wh in sorted(warehouse_by_dist, key=warehouse_by_dist.get, reverse=True):
+        if self._warehouse_from_hq is None:
+            self._warehouse_from_hq = {}
+            for wh in self.player.warehouses:
+                if not wh.is_headquarters and wh.is_usable:
+                    self._warehouse_from_hq[wh] = abs(wh.x - self.player.headquarters.x) + abs(wh.y - self.player.headquarters.y)
+        for wh in sorted(self._warehouse_from_hq, key=self._warehouse_from_hq.get, reverse=True):
             if not wh.is_usable:
                 continue
             for t in self.other_player.headquarters.get_sides():
