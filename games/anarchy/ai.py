@@ -22,7 +22,10 @@ class AI(BaseAI,WindAI):
         """
         # configurable parameters
         self.other_player = self.player.other_player
-
+        self._sides   = 0
+        for s in self.other_player.headquarters.get_sides():
+            if s is not None:
+                self._sides += 1
         self._red     = '\033[91m'
         self._green   = '\033[92m'
         self._yellow  = '\033[33m'
@@ -103,18 +106,14 @@ class AI(BaseAI,WindAI):
 
         #TODO: If low fires for us, increase intensity?
 
-        tries = 5
+        tries = len([x for x in p.police_departments if x.health > 0])
         while self.player.bribes_remaining > 0 and tries > 0:
-            i = random.randint(0,1)
-            tries -= 1
-            if i == 0:
-                # purge any buildings, starting with hq, which may be easy kills
+            if self._sides == 0:
+                self.ignite_useless_tiles()
+            else:
                 self.print_title("RHQ", self._bold, self._purple)
                 self.purge_max_exposed_building()
-            elif i == 1: # pretty sure this just doesn't work
-                #panic the shell AIs
-                self.print_title("IU", self._bold, self._yellow)
-                self.ignite_useless_tiles()
+            tries -= 1
 
         self.print_title("IF", self._bold, self._yellow)
         print(self._reset, end="")
@@ -194,12 +193,11 @@ class AI(BaseAI,WindAI):
     def purge_max_exposed_building(self, num=-1):
         corruption = sorted(self.player.other_player.warehouses, key=lambda warehouses: warehouses.exposure, reverse=True)
         for b in corruption:
-            if b.exposure > 20:
-                for pd in self.player.police_departments:
-                    if pd.is_usable and self.player.bribes_remaining > 0 and num != 0:
-                        pd.raid(b)
-                        num -= 1
-                        break
+            for pd in self.player.police_departments:
+                if pd.is_usable and self.player.bribes_remaining > 0 and num != 0:
+                    pd.raid(b)
+                    num -= 1
+                    break
 
 
     def purge_fire_departments(self):
