@@ -20,7 +20,6 @@ class AI(BaseAI):
         """ this is called once the game starts and your AI knows its player.id and game. You can initialize your AI here.
         """
         # configurable parameters
-        self._fireAllotment = 0.50
         self.other_player = self.player.other_player
 
     def game_updated(self):
@@ -45,6 +44,9 @@ class AI(BaseAI):
         """
         # Put your game logic here for runTurn
         self._max_bribes = self.player.bribes_remaining
+
+        if self.game.current_turn == 0:
+            print("WE GO FIRST\n")
 
         print("")
         print("NEW TURN: bribes={0}\t\t".format(self.player.bribes_remaining), end="")
@@ -78,6 +80,10 @@ class AI(BaseAI):
         for s in ohq.get_sides():
             if s is not None:
                 sides += 1
+
+        # current_forecast (which is applied regardless) is applied
+        # at the end of turn. This function lets us decide where the wind blows at 
+        # the end of the opponent's turn.
 
         #############################
         # in cover
@@ -189,9 +195,9 @@ class AI(BaseAI):
         return None
 
     def change_wind(self, dir):
-        if self.game.next_forecast.direction == dir:
+        if self.game.current_forecast.direction == dir:
             return
-        f = self.game.next_forecast.direction
+        f = self.game.current_forecast.direction
         dirs = ["north", "west", "south", "east", "north"]
 
         for w in self.player.weather_stations:
@@ -227,12 +233,19 @@ class AI(BaseAI):
         """
         Fire safety check
         Put out fire in direction wind blows
+         MUST BE CALLED AFTER WIND DECISION
         """
+        # fix end of our turn
         b = self.player.headquarters.get_building_by_wind(self.game.current_forecast.direction)
-        if b is None:
-            return
-        while b.fire > 0 and self.player.bribes_remaining > 0:
-            b.put_out_fire(self)
+        if b is not None:
+            while b.fire > 0 and self.player.bribes_remaining > 0:
+                b.put_out_fire(self)
+
+        # fix end of their turn
+        b = self.player.headquarters.get_building_by_wind(self.game.next_forecast.direction)
+        if b is not None:
+            while b.fire > 0 and self.player.bribes_remaining > 0:
+                b.put_out_fire(self)
             
     
     def set_fires(self, target):

@@ -18,10 +18,6 @@ class WeatherStation(Building):
         """
         Building.__init__(self)
 
-        # turns to death
-        self._firethreshold = 100000 # any number
-
-
 
     def intensify(self, negative=False):
         """ Bribe the weathermen to intensity the next Forecast by 1 or -1
