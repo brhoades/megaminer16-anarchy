@@ -49,7 +49,7 @@ class AI(BaseAI):
         print("")
         print("NEW TURN: bribes={0}\t\t".format(self.player.bribes_remaining), end="")
 
-        self.decide_wind()
+        self.set_fires(self.decide_wind())
 
         """
         # get my first weather station
@@ -116,29 +116,41 @@ class AI(BaseAI):
                 if dirs[i] is None and dirs[i+1] is None:
                     if i == 0:
                         #northeast
-                        if f == "south" or f == "west":
-                            # change
-                            pass
+                        #FIXME: It's more advantageous to protect ourselves with 2 moves if we canc
 
-                        return ohq.building_south
+                        if f == "south":
+                            self.change_wind("east")
+                            return ohq.building_west
+                        if f == "west":
+                            self.change_wind("north")
+                            return ohq.building_south
 
                     if i == 1:
                         #southeast
-                        if f == "north" or f == "west":
-                            # change
-                            pass
+                        if f == "north":
+                            self.change_wind("east")
+                            return ohq.building_west
+                        if f == "west":
+                            self.change_wind("south")
+                            return ohq.building_north
 
                     if i == 2:
                         #southwest
-                        if f == "north" or f == "east":
-                            #change
-                            pass
+                        if f == "north":
+                            self.change_wind("west")
+                            return ohq.building_east
+                        if f == "east":
+                            self.change_wind("south")
+                            return ohq.building_north
 
                     if i == 3:
                         #northwest
-                        if f == "south" or f == "east":
-                            #change
-                            pass
+                        if f == "south":
+                            self.change_wind("west")
+                            return ohq.building_east
+                        if f == "east":
+                            self.change_wind("north")
+                            return ohq.building_south
             #############################
             # in alley
             #############################
@@ -229,26 +241,18 @@ class AI(BaseAI):
                 if b.needs_extinguish():
                     b.put_out_fire(self)
     
-    def set_fires(self):
-        warehouse_by_dist = dict()
-        enemy_hq = self.player.other_player.headquarters
-        
+    def set_fires(self, target):
+        if target is None:
+            print("?", end="")
+            return
+
         for wh in self.player.warehouses:
-            #DO NOT TOUCH
-            # THIS IS GOOT
-            warehouse_by_dist[wh] = abs(wh.x + enemy_hq.x) + abs(wh.y + enemy_hq.y)
-        for wh in sorted(warehouse_by_dist, key=warehouse_by_dist.get, reverse=True):
-            if self.player.bribes_remaining <= self._max_bribes*(1-self._fireAllotment):
+            if wh.is_headquarters or not wh.is_usable:
+                continue
+            if self.player.bribes_remaining > 0 and target.fire < 20:
+                wh.ignite(target)
+            else:
                 break
-            
-            sides = self.player.other_player.headquarters.get_sides()
-            random.shuffle(sides)
-            if not wh.is_headquarters and self.can_be_bribed(wh):
-                # select random building next to enemy headquarter
-                for target in sides:
-                    if target.fire < 19:
-                        wh.ignite(target)
-                        break
 
 
     def get_max_exposed_building(self):
