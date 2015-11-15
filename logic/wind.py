@@ -20,11 +20,15 @@ class WindAI:
         # in cover
         #############################
         if sides == 1:
-            if ohq.building_south is None and (f == "north" or f == "south"):
-                if hq.building_west is None or hq.building_west.fire <= hq.building_east.fire:
-                    return self.change_wind("east")
-                else:
-                    return self.change_wind("west")
+            # stalemate
+            if hq.building_south is None and f != "north":
+                return self.change_wind("north")
+            else:
+                return
+            if hq.building_north is None and f != "south":
+                return self.change_wind("south")
+            else:
+                return
 
             # Bingo. We want to make sure the wind always covers our ass
             if hq.building_east is None:
