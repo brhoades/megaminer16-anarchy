@@ -109,6 +109,10 @@ class Building(GameObject):
         """
         return self._y
 
+    @property
+    def is_alive(self):
+        return self.health > 0
+
 
     def get_sides(self):
         """List of adjacent buildings
@@ -126,5 +130,5 @@ class Building(GameObject):
             fire_departments: List of player owned fire departments
         """
         for dep in fire_departments:
-            if self.fire > 0:
+            if self.fire > 0 and dep.is_alive:
                 dep.extinguish(self)
