@@ -51,6 +51,7 @@ class Warehouse(Building):
         Returns:
             int: The exposure added to this Building's exposure. -1 is returned if there was an error.
         """
+        print("I", end="")
         return self._run_on_server('ignite', building=building)
 
 

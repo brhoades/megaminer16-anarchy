@@ -44,6 +44,7 @@ class WeatherStation(Building):
         Returns:
             bool: true if the rotation worked, false otherwise.
         """
+        print("W", end="")
         return self._run_on_server('rotate', counterclockwise=counterclockwise)
 
 

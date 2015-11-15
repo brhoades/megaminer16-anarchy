@@ -35,6 +35,7 @@ class PoliceDepartment(Building):
         Returns:
             int: The amount of damage dealt to the warehouse, or -1 if there was an error.
         """
+        print("R", end="")
         return self._run_on_server('raid', warehouse=warehouse)
 
 

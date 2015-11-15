@@ -42,6 +42,8 @@ class AI(BaseAI):
         """
         # Put your game logic here for runTurn
         self.fire_safety_check()
+        print("")
+        print("NEW TURN: ", end="")
 
         # get my first warehouse
         for wh in self.player.warehouses:
