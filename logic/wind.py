@@ -35,6 +35,7 @@ class WindAI:
                 return self.change_wind("west")
             if hq.building_west is None:
                 return self.change_wind("east")
+            return # don't break something optimal
 
         if sides == 2:
             #############################
@@ -83,6 +84,7 @@ class WindAI:
                         return self.change_wind("east")
                     else:
                         return self.change_wind("west")
+            return # don't break something optimal
 
         #### can we do /anything/ to help ourselves? ############
         # point the wind where the fires are lowest on our side and highest on theirs
