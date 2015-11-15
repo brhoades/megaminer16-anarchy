@@ -113,6 +113,10 @@ class Building(GameObject):
     def is_alive(self):
         return self.health > 0
 
+    @property
+    def is_usable(self):
+        return self.is_alive and not self.bribed
+
 
     def get_sides(self):
         """List of adjacent buildings
@@ -130,5 +134,5 @@ class Building(GameObject):
             fire_departments: List of player owned fire departments
         """
         for dep in fire_departments:
-            if self.fire > 0 and dep.is_alive:
+            if self.fire > 0 and dep.is_usable:
                 dep.extinguish(self)
