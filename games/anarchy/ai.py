@@ -59,30 +59,30 @@ class AI(BaseAI):
         print("|W|", end="")
         self.decide_wind()
 
-        # our safety first, this turn
-        print("|E1|", end="")
-        self.fire_safety_check(self.game.current_forecast.direction)
-
         # priority to burning them this turn, since they can't avoid it
         print("|I1|", end="")
         self.set_fires(self.game.current_forecast.direction)
+
+        # burn them next turn if we can
+        print("|I2|", end="")
+        self.set_fires(self.game.next_forecast.direction)
+        
+        # our safety, this turn
+        print("|E1|", end="")
+        self.fire_safety_check(self.game.current_forecast.direction)
 
         # protect us, next turn
         print("|E2|", end="")
         self.fire_safety_check(self.game.next_forecast.direction)
 
-        # burn them next turn if we can
-        print("|I2|", end="")
-        self.set_fires(self.game.next_forecast.direction)
-
-        self.purge_fire_departments()
+        #panic the shell AIs
+        #self.ignite_useless_tiles()
 
         # purge any buildings, starting with hq, which may be easy kills
         self.purge_max_exposed_building()
 
-        # light their fire departments with remaining points
         self.purge_fire_departments()
-        
+
         #end even strat
         ####################################################
 
@@ -133,25 +133,21 @@ class AI(BaseAI):
             for i in range(0,len(dirs)-1):
                 if dirs[i] is None and dirs[i+1] is None:
                     if i == 0:
-                        print("NORTHEAST CORNER")
                         #northeast
                         # they'll have northwest, so we want wind blowing east always
                         return self.change_wind("east")
 
                     if i == 1:
-                        print("SOUTHEAST CORNER")
                         #southeast
                         # they'll have southwest, so we want wind blowing east always
                         return self.change_wind("east")
 
                     if i == 2:
-                        print("SOUTHWEST CORNER")
                         #southwest
                         # they'll have southeast, so we want wind blowing west always
                         return self.change_wind("west")
 
                     if i == 3:
-                        print("NORTHWEST CORNER")
                         #northwest
                         # they'll have northeast, so we want wind blowing west always
                         return self.change_wind("west")
@@ -295,3 +291,19 @@ class AI(BaseAI):
                 if wh.is_usable and fd.fire < 18:
                     wh.ignite(fd)
                     break
+
+    def ignite_useless_tiles(self):
+        """
+        In a vain attempt to scare shellai-like ais, let's light the enemy hq's surrounding tiles where possible
+        """
+        warehouse_by_dist = dict()
+        for wh in self.player.warehouses:
+            if not wh.is_headquarters:
+                warehouse_by_dist[wh] = abs(wh.x - self.player.headquarters.x) + abs(wh.y - self.player.headquarters.y)
+        for wh in sorted(warehouse_by_dist, key=warehouse_by_dist.get, reverse=True):
+            if not wh.is_usable:
+                continue
+            for t in self.other_player.headquarters.get_sides():
+                if t.is_headquarters or t.fire >= 18 or not wh.is_usable or self.player.bribes_remaining <= 0:
+                    continue
+                wh.ignite(t)
