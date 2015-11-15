@@ -54,6 +54,15 @@ class AI(BaseAI):
         self.fire_safety_check()
         #FIXME: ^ spot
 
+        # purge any buildings, starting with hq, which may be easy kills
+        self.purge_max_exposed_building()
+
+        # light their fire departments with remaining points
+        self.purge_fire_departments()
+
+        if self.player.bribes_remaining > 0:
+            print("{0}".format(self.player.bribes_remaining), end="")
+
         return True
 
     def decide_wind(self):
@@ -136,22 +145,26 @@ class AI(BaseAI):
                             self.change_wind("north")
                             return ohq.building_south
             #############################
-            # in alley
+            # in tunnel
             #############################
             if ohq.building_north is None and ohq.building_south is None:
-                if hq.building_east is None or hq.building_east.fire <= hq.building_west.fire:
-                    self.change_wind("west")
-                    return ohq.building_east
-                else:
-                    self.change_wind("east")
-                    return ohq.building_west
+                #east->west tunnel
+                if f == "east" or f == "west":
+                    if hq.building_east is None or hq.building_east.fire <= hq.building_west.fire:
+                        self.change_wind("west")
+                        return ohq.building_east
+                    else:
+                        self.change_wind("east")
+                        return ohq.building_west
             if ohq.building_west is None and ohq.building_east is None:
-                if hq.building_north is None or hq.building_north.fire <= hq.building_south.fire:
-                    self.change_wind("south")
-                    return ohq.building_north
-                else:
-                    self.change_wind("next")
-                    return ohq.building_south
+                #north->south tunnel
+                if f == "east" or f == "west":
+                    if hq.building_north is None or hq.building_north.fire <= hq.building_south.fire:
+                        self.change_wind("south")
+                        return ohq.building_north
+                    else:
+                        self.change_wind("next")
+                        return ohq.building_south
 
 
 
@@ -236,21 +249,24 @@ class AI(BaseAI):
                 break
 
 
-    def get_max_exposed_building(self):
+    def purge_max_exposed_building(self):
         corruption = sorted(self.player.other_player.warehouses, key=lambda warehouses: warehouses.exposure)
         if corruption[-1].exposure > 20:
-            #FIXME: change to next available police department
-            self.player.police_departments[0].raid(corruption[-1])
+            for pd in self.player.police_departments:
+                if pd.is_usable and self.player.bribes_remaining > 0:
+                    pd.raid(corruption[-1])
+                    break
 
 
     def purge_fire_departments(self):
         for fd in self.player.other_player.fire_departments:
-            if self.player.bribes_remaining < 1:
+            if self.player.bribes_remaining <= 0:
                 return
             warehouse_by_dist = dict()
             for wh in self.player.warehouses:
-                warehouse_by_dist[wh] = abs(wh.x - fd.x) + abs(wh.y - fd.y)
+                if not wh.is_headquarters:
+                    warehouse_by_dist[wh] = abs(wh.x - fd.x) + abs(wh.y - fd.y)
             for wh in sorted(warehouse_by_dist, key=warehouse_by_dist.get, reverse=True):
-                if self.can_be_bribed(wh) and fd.fire < 18:
+                if wh.is_usable and fd.fire < 18:
                     wh.ignite(fd)
                     break
