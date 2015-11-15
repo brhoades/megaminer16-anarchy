@@ -37,7 +37,7 @@ class AI(BaseAI,WindAI):
         self._warehouse_from_hq = None
 
         # print header, newline is provided by the run_turn func
-        print(self._green + "WA/FD/PD/WS\t" + self._red + "WA/FD/PD/WS\t" + self._reset + "BRIBES\t" + self._green + "HQ\t" + self._red +"HQ\t" + self._reset + "|PHASE|ACTIONS|PHASE|...")
+        print(self._green + "WA/FD/PD/WS\t" + self._red + "WA/FD/PD/WS\t" + self._reset + "C/N/BR\t" + self._green + "HQ\t" + self._red +"HQ\t" + self._reset + "|PHASE|ACTIONS|PHASE|...")
 
     def game_updated(self):
         """ this is called every time the game's state updates, so if you are tracking anything you can update it here.
@@ -61,6 +61,9 @@ class AI(BaseAI,WindAI):
         # Put your game logic here for runTurn
         self._max_bribes = self.player.bribes_remaining
 
+        fc = self.wind_to_text(self.game.current_forecast.direction) 
+        fn = self.wind_to_text(self.game.next_forecast.direction) 
+
         p = self.player
         #structure info
         print(self._green + "{0}/{1}/{2}/{3}\t".format(len([x for x in p.warehouses if x.health > 0]), 
@@ -72,8 +75,8 @@ class AI(BaseAI,WindAI):
             len([x for x in p.fire_departments if x.health > 0]), 
             len([x for x in p.police_departments if x.health > 0]), 
             len([x for x in p.weather_stations if x.health > 0])), end="")
-        print((self._reset + "{0}\t" + self._green + "{1}\t" + self._red \
-                + "{2}" + self._reset + "\t").format(self.player.bribes_remaining, \
+        print((self._reset + "{0}/{1}/{2}\t" + self._green + "{3}\t" + self._red \
+                + "{4}" + self._reset + "\t").format(fc, fn, self.player.bribes_remaining, \
                 self.player.headquarters.health, self.other_player.headquarters.health), end="")
 
         ####################################################
