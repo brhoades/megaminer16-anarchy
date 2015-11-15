@@ -58,13 +58,11 @@ class AI(BaseAI):
                 # bribe my first fire department to extinguish my first building
                 first_fire_department.extinguish(target)
 
-        # get my first police department
         first_police_department = self.player.police_departments[0]
         if self.can_be_bribed(first_police_department) and self.player.bribes_remaining > 0:
             # select the enemy's first warehouse as the target
-            target = self.player.other_player.warehouses[0]
+            self.get_max_exposed_building()
             # bribe my first police station to raid the first warehouse the other player owns
-            first_police_department.raid(target)
 
         # get my first weather station
         first_weather_station = self.player.weather_stations[0]
@@ -123,3 +121,10 @@ class AI(BaseAI):
                 # select random building next to enemy headquarter
                 target = random.choice(self.player.other_player.headquarters.get_sides())
                 wh.ignite(target)
+
+
+    def get_max_exposed_building(self):
+        corruption = sorted(self.player.other_player.warehouses, key=lambda warehouses: warehouses.exposure)
+        if corruption[-1].exposure > 20:
+            #FIXME: change to next available police department
+            self.player.police_departments[0].raid(corruption[-1])
