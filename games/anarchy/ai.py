@@ -159,14 +159,14 @@ class AI(BaseAI,WindAI):
     def set_fires(self, f):
         if self.player.bribes_remaining <= 0:
             return
-        for ewh in self.other_player.headquarters.get_sides():
+        for b in self.other_player.headquarters.get_sides():
             warehouse_by_dist = dict()
             for wh in self.player.warehouses:
                 if not wh.is_headquarters:
-                    warehouse_by_dist[wh] = abs(wh.x - ewh.x) + abs(wh.y - ewh.y)
+                    warehouse_by_dist[wh] = abs(wh.x - b.x) + abs(wh.y - b.y)
             for wh in sorted(warehouse_by_dist, key=warehouse_by_dist.get, reverse=True):
-                if wh.is_usable and ewh.fire <= 18:
-                    wh.ignite(ewh)
+                if wh.is_usable and b.fire <= 18 and not b.is_headquarters:
+                    wh.ignite(b)
                     break
         # for wh in self.player.warehouses:
         #     if wh.is_headquarters or not wh.is_usable:
