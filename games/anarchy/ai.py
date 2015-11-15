@@ -129,11 +129,15 @@ class AI(BaseAI):
         for wh in sorted(warehouse_by_dist, key=warehouse_by_dist.get, reverse=True):
             if self.player.bribes_remaining <= self._max_bribes*(1-self._fireAllotment):
                 break
-
+            
+            sides = self.player.other_player.headquarters.get_sides()
+            random.shuffle(sides)
             if not wh.is_headquarters and self.can_be_bribed(wh):
                 # select random building next to enemy headquarter
-                target = random.choice(self.player.other_player.headquarters.get_sides())
-                wh.ignite(target)
+                for target in sides:
+                    if target.fire < 19:
+                        wh.ignite(target)
+                        break
 
 
     def get_max_exposed_building(self):
