@@ -140,12 +140,12 @@ class Building(GameObject):
     # if you want to add any client side logic (such as state checking functions) this is where you can add them
     # <<-- /Creer-Merge: functions -->>
     
-    def put_out_fire(self, fire_departments):
+    def put_out_fire(self, ai):
         """ Finds the first available fire department and calls extinguish on current building
             
         Args:
             fire_departments: List of player owned fire departments
         """
-        for dep in fire_departments:
-            if self.fire > 0 and dep.is_usable:
+        for dep in ai.player.fire_departments:
+            if self.fire > 0 and dep.is_usable and ai.player.bribes_remaining:
                 dep.extinguish(self)

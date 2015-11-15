@@ -43,7 +43,7 @@ class AI(BaseAI):
         """
         # Put your game logic here for runTurn
         print("")
-        print("NEW TURN: ", end="")
+        print("NEW TURN: bribes={0}\t\t".format(self.player.bribes_remaining), end="")
 
         self.fire_safety_check()
         self.set_fires()
@@ -102,21 +102,20 @@ class AI(BaseAI):
             Order defines this importance... later loops may not get to put out fires.
         """
         tokensLeft = 100 #FIXME: count tokens left. Each bribe remaining is a token.
-        fd = self.player.fire_departments
 
         # Biggest deal is hq safety
         for building in self.player.headquarters.get_sides():
-            if building.fire > 1 and self.player.bribes_remaining > 0: # hardcoded, any fire
-                building.put_out_fire(fd)
+            if building.fire > 1: # hardcoded, any fire
+                building.put_out_fire(self)
         
         # Order here dictates who gets priority
-        buildings = [fd, self.player.weather_stations] #police_departments, warehouses
+        buildings = [self.player.fire_departments, self.player.weather_stations] #police_departments, warehouses
 
-        # for bs in buildings:
-            # for b in bs:
+        for bs in buildings:
+            for b in bs:
                 #FIXME: check for tokens
-                # if b.needs_extinguish() and self.player.bribes_remaining > 0:
-                    # b.put_out_fire(fd)
+                if b.needs_extinguish():
+                     b.put_out_fire(self)
     
     def set_fires(self):
         for wh in self.player.warehouses:
