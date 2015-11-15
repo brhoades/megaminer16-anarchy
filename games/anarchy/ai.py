@@ -21,7 +21,6 @@ class AI(BaseAI):
         """
         # configurable parameters
         self._fireAllotment = 0.50
-        self._max_bribes = self.player.bribes_remaining
         self.other_player = self.player.other_player
 
     def game_updated(self):
@@ -45,6 +44,8 @@ class AI(BaseAI):
             bool: represents if you want to end your turn. true means end the turn, false means to keep your turn going and re-call runTurn()
         """
         # Put your game logic here for runTurn
+        self._max_bribes = self.player.bribes_remaining
+
         print("")
         print("NEW TURN: bribes={0}\t\t".format(self.player.bribes_remaining), end="")
 
