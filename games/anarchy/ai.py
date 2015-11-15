@@ -44,14 +44,14 @@ class AI(BaseAI):
         self.fire_safety_check()
 
         # get my first warehouse
-        first_warehouse = self.player.warehouses[0]
-        if self.can_be_bribed(first_warehouse) and self.player.bribes_remaining > 0:
-            # select the enemy's first building as the target
-            target = self.player.other_player.buildings[0]
-            # make sure the target isn't a headquarters which can't be ignited directly
-            if not target.is_headquarters:
-                # bribe my first warehouse to ignite the enemy's first building
-                first_warehouse.ignite(target)
+        for wh in self.player.warehouses:
+            if self.can_be_bribed(wh) and self.player.bribes_remaining > 0:
+                # select the enemy's first building as the target
+                target = self.player.other_player.headquarters.get_sides()[0]
+                # make sure the target isn't a headquarters which can't be ignited directly
+                if not target.is_headquarters:
+                    # bribe my first warehouse to ignite the enemy's first building
+                    wh.ignite(target)
 
         # get my first fire department
         first_fire_department = self.player.fire_departments[0]
@@ -87,7 +87,7 @@ class AI(BaseAI):
         if self.can_be_bribed(second_weather_station) and self.player.bribes_remaining > 0:
             # bribe my second weather station to rotate the wind clockwise
             second_weather_station.rotate()
-
+        
         return True
 
     def can_be_bribed(self, building):
@@ -115,7 +115,7 @@ class AI(BaseAI):
 
         # Biggest deal is hq safety
         for building in self.player.headquarters.get_sides():
-            if building.fire > 1: # hardcoded, any fire
+            if building.fire > 1 and self.player.bribes_remaining > 0: # hardcoded, any fire
                 building.put_out_fire(fd)
         
         # Order here dictates who gets priority
@@ -124,5 +124,5 @@ class AI(BaseAI):
         for bs in buildings:
             for b in bs:
                 #FIXME: check for tokens
-                if building.needs_extinguish():
-                    building.put_out_fire(fd)
+                if b.needs_extinguish() and self.player.bribes_remaining > 0:
+                    b.put_out_fire(fd)
