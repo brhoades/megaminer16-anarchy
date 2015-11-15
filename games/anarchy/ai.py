@@ -49,9 +49,7 @@ class AI(BaseAI):
         print("")
         print("NEW TURN: bribes={0}\t\t".format(self.player.bribes_remaining), end="")
 
-        self.set_fires()
-        self.fire_safety_check()
-
+        self.decide_wind()
 
         """
         # get my first weather station
@@ -73,6 +71,27 @@ class AI(BaseAI):
         """
         
         return True
+
+    def decide_wind(self):
+        """Change wind if needed
+            
+            Returns fire target tile. None if there isn't one.
+        """
+        ohq = self.other_player.headquarters.building_north
+        
+        # in open
+        if ohq.building_north is not None and ohq.building_south is not None and \
+          ohq.building_east is not None and ohq.building_west is not None:
+            if self.game.current_forcast == "north":
+                return ohq.building_south
+            elif self.game.current_forecast == "south":
+                return ohq.building_north
+            elif self.game.current_forecast == "east":
+                return ohq.building_west
+            elif self.game.current_forecast == "west":
+                return ohq.building_east
+        
+
 
     def can_be_bribed(self, building):
         """ This is an example of a utility function you could create.
