@@ -89,7 +89,18 @@ class AI(BaseAI):
         # in cover
         #############################
         if sides == 1:
-
+            if ohq.building_south and f == "north":
+                #change
+                pass
+            if ohq.building_east and f == "west":
+                #change
+                pass
+            if ohq.building_north and f == "south":
+                #change
+                pass
+            if ohq.building_west and f == "east":
+                #change
+                pass
 
         if sides == 2:
             #############################
