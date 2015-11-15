@@ -25,15 +25,17 @@ class AI(BaseAI,WindAI):
 
         self._red     = '\033[91m'
         self._green   = '\033[92m'
-        self._yellow  = '\033[93m'
+        self._yellow  = '\033[33m'
+        self._lyellow = '\033[93m'
         self._lpurple = '\033[94m'
         self._purple  = '\033[95m'
         self._blue    = '\033[34m'
         self._bold_red= '\033[31m'
-        self._black   = '\033[0m'
+        self._reset   = '\033[0m'
+        self._bold   = '\033[1m'
 
         # print header, newline is provided by the run_turn func
-        print(self._green + "WA/FD/PD/WS\t" + self._red + "WA/FD/PD/WS\t" + self._black + "BRIBES\t" + self._green + "HQ\t" + self._red +"HQ\t" + self._black + "|PHASE|ACTIONS|PHASE|...")
+        print(self._green + "WA/FD/PD/WS\t" + self._red + "WA/FD/PD/WS\t" + self._reset + "BRIBES\t" + self._green + "HQ\t" + self._red +"HQ\t" + self._reset + "|PHASE|ACTIONS|PHASE|...")
 
         self._warehouse_from_hq = {}
 
@@ -66,8 +68,8 @@ class AI(BaseAI,WindAI):
         p = self.other_player
         print(self._red + "{0}/{1}/{2}/{3}\t".format(len(p.warehouses), 
             len(p.fire_departments), len(p.police_departments), len(p.weather_stations)), end="")
-        print((self._black + "{0}\t" + self._green + "{1}\t" + self._red \
-                + "{2}" + self._black + "\t").format(self.player.bribes_remaining, \
+        print((self._reset + "{0}\t" + self._green + "{1}\t" + self._red \
+                + "{2}" + self._reset + "\t").format(self.player.bribes_remaining, \
                 self.player.headquarters.health, self.other_player.headquarters.health), end="")
 
         ####################################################
@@ -77,19 +79,19 @@ class AI(BaseAI,WindAI):
         self.decide_wind()
 
         # priority to burning them this turn, since they can't avoid it
-        self.print_title("I1", self._black, self._red)
+        self.print_title("I1", self._bold, self._red)
         self.set_fires(self.game.current_forecast.direction)
 
         # burn them next turn if we can
-        self.print_title("I2", self._black, self._red)
+        self.print_title("I2", self._bold, self._red)
         self.set_fires(self.game.next_forecast.direction)
         
         # our safety, this turn
-        self.print_title("E1", self._black, self._blue)
+        self.print_title("E1", self._bold, self._blue)
         self.fire_safety_check(self.game.current_forecast.direction)
 
         # protect us, next turn
-        self.print_title("E2", self._black, self._blue)
+        self.print_title("E2", self._bold, self._blue)
         self.fire_safety_check(self.game.next_forecast.direction)
 
         #TODO: If low fires for us, increase intensity?
@@ -100,16 +102,16 @@ class AI(BaseAI,WindAI):
             tries -= 1
             if i == 0:
                 # purge any buildings, starting with hq, which may be easy kills
-                self.print_title("RHQ", self._black, self._purple)
+                self.print_title("RHQ", self._bold, self._purple)
                 self.purge_max_exposed_building()
             elif i == 1: # pretty sure this just doesn't work
                 #panic the shell AIs
-                self.print_title("IU", self._black, self._yellow)
+                self.print_title("IU", self._bold, self._yellow)
                 self.ignite_useless_tiles()
 
-        self.print_title("IF", self._black, self._yellow)
+        self.print_title("IF", self._bold, self._yellow)
         self.purge_fire_departments()
-        print(self._black, end="")
+        print(self._reset, end="")
 
         #end even strat
         ####################################################
@@ -208,4 +210,4 @@ class AI(BaseAI,WindAI):
                 wh.ignite(t)
 
     def print_title(self, title, color, after):
-        print(color+"|"+title+"|"+after, end="")
+        print(color+"|"+title+"|"+self._reset+after, end="")
