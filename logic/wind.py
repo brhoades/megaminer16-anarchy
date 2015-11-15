@@ -141,3 +141,12 @@ class WindAI:
                 w.rotate()
                 break
 
+    def wind_to_text(self, f):
+        if f == "north":
+            return "N"
+        elif  f == "south":
+            return "S"
+        elif f == "east":
+            return "E"
+        else:
+            return "W"
