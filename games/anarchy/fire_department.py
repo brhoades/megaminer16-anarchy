@@ -43,8 +43,6 @@ class FireDepartment(Building):
             bool: true if the bribe worked, false otherwise
         """
         print("E", end="")
-        if building.is_headquarters:
-            raise "What are we doing"
         return self._run_on_server('extinguish', building=building)
 
 
