@@ -28,10 +28,11 @@ class AI(BaseAI):
         self._lpurple = '\033[94m'
         self._purple  = '\033[95m'
         self._blue    = '\033[34m'
+        self._bold_red    = '\033[31m'
         self._black   = '\033[0m'
 
         # print header, newline is provided by the run_turn func
-        print(self._green + "WA/FD/PD/WS\t" + self._red + "WA/FD/PD/WS\t" + "BRIBES\t" + self._green + "HQ\t" + self._red +"HQ\t" + self._black + "|PHASE|ACTIONS|PHASE|...", end="")
+        print(self._green + "WA/FD/PD/WS\t" + self._red + "WA/FD/PD/WS\t" + self._black + "BRIBES\t" + self._green + "HQ\t" + self._red +"HQ\t" + self._black + "|PHASE|ACTIONS|PHASE|...")
 
     def game_updated(self):
         """ this is called every time the game's state updates, so if you are tracking anything you can update it here.
@@ -55,10 +56,6 @@ class AI(BaseAI):
         # Put your game logic here for runTurn
         self._max_bribes = self.player.bribes_remaining
 
-        if self.game.current_turn == 0:
-            print("WE GO FIRST\n")
-
-        print("")
         p = self.player
         #structure info
         print(self._green + "{0}/{1}/{2}/{3}\t".format(len(p.warehouses), 
@@ -66,13 +63,11 @@ class AI(BaseAI):
         p = self.other_player
         print(self._red + "{0}/{1}/{2}/{3}\t".format(len(p.warehouses), 
             len(p.fire_departments), len(p.police_departments), len(p.weather_stations)), end="")
-        print(("{0}\t" + self._green + "{1}\t" + self._red \
+        print((self._black + "{0}\t" + self._green + "{1}\t" + self._red \
                 + "{2}" + self._black + "\t").format(self.player.bribes_remaining, \
                 self.player.headquarters.health, self.other_player.headquarters.health), end="")
 
         ####################################################
-        #if self.game.current_turn % 2: #even (we moved first) strategy below
-
         # change the wind in our favor
         # if we don't do this here, we may never get a chance
         print("|W|", end="")
@@ -97,6 +92,8 @@ class AI(BaseAI):
         #panic the shell AIs
         #self.ignite_useless_tiles()
 
+        #TODO: If low fires, increase intensity?
+
         self.print_title("RHQ", self._black, self._purple)
         # purge any buildings, starting with hq, which may be easy kills
         self.purge_max_exposed_building()
@@ -109,7 +106,9 @@ class AI(BaseAI):
         ####################################################
 
         if self.player.bribes_remaining > 0:
-            print("{0}".format(self.player.bribes_remaining), end="")
+            print(self._bold_red + "{0}".format(self.player.bribes_remaining), end="")
+
+        print("")
 
         return True
 
