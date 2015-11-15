@@ -85,18 +85,18 @@ class AI(BaseAI):
         if sides == 1:
             if ohq.building_south is None and (f == "north" or f == "south"):
                 if hq.building_west is None or hq.building_west.fire <= hq.building_east.fire:
-                    self.change_wind_direction("east")
+                    self.change_wind("east")
                     return ohq.building_west
                 else:
-                    self.change_wind_direction("west")
+                    self.change_wind("west")
                     return ohq.building_east
                 #FIXME: Is it ever worth it to go south?
             if ohq.building_east is None and (f == "east" or f == "west"):
                 if hq.building_south is None or hq.building_south.fire <= hq.building_north.fire:
-                    self.change_wind_direction("north")
+                    self.change_wind("north")
                     return ohq.building_south
                 else:
-                    self.change_wind_direction("south")
+                    self.change_wind("south")
                     return ohq.building_north
 
         if sides == 2:
