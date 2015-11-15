@@ -78,19 +78,53 @@ class AI(BaseAI):
             Returns fire target tile. None if there isn't one.
         """
         ohq = self.other_player.headquarters.building_north
-        
+        sides = 0
+
+        for s in ohq.get_sides():
+            if s is not None:
+                sides += 1
+
         # in open
-        if ohq.building_north is not None and ohq.building_south is not None and \
-          ohq.building_east is not None and ohq.building_west is not None:
+        if sides == 0:
             if self.game.current_forcast == "north":
                 return ohq.building_south
-            elif self.game.current_forecast == "south":
+            if self.game.current_forecast == "south":
                 return ohq.building_north
-            elif self.game.current_forecast == "east":
+            if self.game.current_forecast == "east":
                 return ohq.building_west
-            elif self.game.current_forecast == "west":
+            if self.game.current_forecast == "west":
                 return ohq.building_east
         
+        # in cover
+        if sides == 1:
+
+
+        if sides == 2:
+            # in corner
+            dirs = [ohq.building_north, ohq.building_east, ohq.building_west, ohq.building_south, \
+                    ohq.building_north]
+            for i in range(0,len(dirs)-1):
+                if dirs[i] is None and dirs[i+1] is None:
+                    if i == 0:
+                        #northeast
+                        return ohq.building_south
+                    if self.game.current_forecast == "south":
+                        return ohq.building_north
+                    if self.game.current_forecast == "east":
+                        return ohq.building_west
+                    if self.game.current_forecast == "west":
+                        return ohq.building_east
+
+            # in alley
+            #FIXME
+
+        if sides == 3:
+            # we lost
+            for s in ohq.get_sides():
+                if is is not None:
+                    return s
+
+        return None
 
 
     def can_be_bribed(self, building):
