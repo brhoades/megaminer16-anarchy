@@ -27,15 +27,16 @@ class WindAI:
                     return self.change_wind("west")
 
             # Bingo. We want to make sure the wind always covers our ass
-            if ohq.building_east is None:
+            if hq.building_east is None:
                 return self.change_wind("west")
-            if ohq.building_west is None:
+            if hq.building_west is None:
                 return self.change_wind("east")
 
         if sides == 2:
             #############################
             # in corner
             #############################
+            #FIXME: uh, these should be ours. no wonder directions are backwards :>
             dirs = [ohq.building_north, ohq.building_east, ohq.building_south, \
                     ohq.building_west, ohq.building_north]
             for i in range(0,len(dirs)-1):
