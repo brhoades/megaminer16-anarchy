@@ -108,7 +108,8 @@ class AI(BaseAI):
                 building.put_out_fire(self)
         
         # Order here dictates who gets priority
-        buildings = [self.player.fire_departments]#weather_stations, police_departments, warehouses
+        #buildings = [self.player.fire_departments]#weather_stations, police_departments, warehouses
+        buildings = []
 
         for bs in buildings:
             for b in bs:
