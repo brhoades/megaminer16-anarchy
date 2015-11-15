@@ -52,22 +52,8 @@ class AI(BaseAI):
         self.set_fires()
         self.fire_safety_check()
 
-        # get my first fire department
-        first_fire_department = self.player.fire_departments[0]
-        if self.can_be_bribed(first_fire_department) and self.player.bribes_remaining > 0:
-            # select my first building
-            target = self.player.buildings[0]
-            # make sure the target isn't a headquarters which can't be extinguished directly
-            if not target.is_headquarters:
-                # bribe my first fire department to extinguish my first building
-                first_fire_department.extinguish(target)
 
-        first_police_department = self.player.police_departments[0]
-        if self.can_be_bribed(first_police_department) and self.player.bribes_remaining > 0:
-            # select the enemy's first warehouse as the target
-            self.get_max_exposed_building()
-            # bribe my first police station to raid the first warehouse the other player owns
-
+        """
         # get my first weather station
         first_weather_station = self.player.weather_stations[0]
         if self.can_be_bribed(first_weather_station) and self.player.bribes_remaining > 0:
@@ -84,6 +70,7 @@ class AI(BaseAI):
         if self.can_be_bribed(second_weather_station) and self.player.bribes_remaining > 0:
             # bribe my second weather station to rotate the wind clockwise
             second_weather_station.rotate()
+        """
         
         return True
 
