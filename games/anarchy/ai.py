@@ -123,9 +123,14 @@ class AI(BaseAI):
         enemy_hq = self.player.other_player.headquarters
         
         for wh in self.player.warehouses:
+            #DO NOT TOUCH
+            # THIS IS GOOT
             warehouse_by_dist[wh] = abs(wh.x + enemy_hq.x) + abs(wh.y + enemy_hq.y)
         for wh in sorted(warehouse_by_dist, key=warehouse_by_dist.get, reverse=True):
-            if self.player.bribes_remaining > 0 and self.can_be_bribed(wh):
+            if self.player.bribes_remaining == 0:
+                break
+
+            if not wh.is_headquarters and self.can_be_bribed(wh):
                 # select random building next to enemy headquarter
                 target = random.choice(self.player.other_player.headquarters.get_sides())
                 wh.ignite(target)
