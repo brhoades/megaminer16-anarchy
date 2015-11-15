@@ -79,47 +79,88 @@ class AI(BaseAI):
         """
         ohq = self.other_player.headquarters.building_north
         sides = 0
+        f = f
 
         for s in ohq.get_sides():
             if s is not None:
                 sides += 1
 
+        #############################
         # in open
+        #############################
         if sides == 0:
             if self.game.current_forcast == "north":
                 return ohq.building_south
-            if self.game.current_forecast == "south":
+            if f == "south":
                 return ohq.building_north
-            if self.game.current_forecast == "east":
+            if f == "east":
                 return ohq.building_west
-            if self.game.current_forecast == "west":
+            if f == "west":
                 return ohq.building_east
         
+        #############################
         # in cover
+        #############################
         if sides == 1:
 
 
         if sides == 2:
+            #############################
             # in corner
-            dirs = [ohq.building_north, ohq.building_east, ohq.building_west, ohq.building_south, \
-                    ohq.building_north]
+            #############################
+            dirs = [ohq.building_north, ohq.building_east, ohq.building_south, \
+                    ohq.building_west, ohq.building_north]
             for i in range(0,len(dirs)-1):
                 if dirs[i] is None and dirs[i+1] is None:
                     if i == 0:
                         #northeast
-                        return ohq.building_south
-                    if self.game.current_forecast == "south":
-                        return ohq.building_north
-                    if self.game.current_forecast == "east":
-                        return ohq.building_west
-                    if self.game.current_forecast == "west":
-                        return ohq.building_east
+                        if f == "south" or f == "west":
+                            # change
+                            pass
+                        if f == "north":
+                            return ohq.building_south
+                        if f == "east":
+                            return ohq.building_west
 
+                        return ohq.building_south
+
+                    if i == 1:
+                        #southeast
+                        if f == "north" or f == "west":
+                            # change
+                            pass
+                        if f == "south":
+                            return ohq.building_north
+                        if f == "east":
+                            return ohq.building_west
+
+                    if i == 2:
+                        #southwest
+                        if f == "north" or f == "east":
+                            #change
+                            pass
+                        if f == "south":
+                            return ohq.building_north
+                        if f == "west":
+                            return ohq.building_east
+
+                    if i == 3:
+                        #northwest
+                        if f == "south" or f == "east":
+                            #change
+                            pass
+                        if f == "north":
+                            return ohq.building_south
+                        if f == "west":
+                            return ohq.building_east
+            #############################
             # in alley
+            #############################
             #FIXME
 
         if sides == 3:
             # we lost
+            #FIXME: change wind
             for s in ohq.get_sides():
                 if is is not None:
                     return s
