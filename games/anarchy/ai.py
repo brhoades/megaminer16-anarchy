@@ -117,7 +117,6 @@ class AI(BaseAI,WindAI):
                 self.ignite_useless_tiles()
 
         self.print_title("IF", self._bold, self._yellow)
-        self.purge_fire_departments()
         print(self._reset, end="")
 
         #end even strat
