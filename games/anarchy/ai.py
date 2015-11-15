@@ -92,7 +92,7 @@ class AI(BaseAI):
         #TODO: If low fires for us, increase intensity?
 
         tries = 5
-        while self.player.bribes_remaining > 0 or tries <= 0:
+        while self.player.bribes_remaining > 0 and tries > 0:
             i = random.randint(0,1)
             tries -= 1
             if i == 0:
