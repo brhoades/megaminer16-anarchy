@@ -78,6 +78,9 @@ class AI(BaseAI,WindAI):
         self.print_title("W", self._bold, self._reset)
         self.decide_wind()
 
+        # attack enemy HQ if they have 15 exposure or more
+        self.attack_enemy_hq()
+
         # priority to burning them this turn, since they can't avoid it
         self.print_title("I1", self._bold, self._red)
         self.set_fires(self.game.current_forecast.direction)
@@ -165,6 +168,15 @@ class AI(BaseAI,WindAI):
                 wh.ignite(target)
             else:
                 break
+
+    def attack_enemy_hq(self):
+        ohq = self.player.other_player.headquarters
+        if ohq.fire >= 15:
+            for pd in self.player.police_departments:
+                if pd.is_usable and self.player.bribes_remaining > 0:
+                    pd.raid(ohq)
+                    self.print_title("IHQ", self._bold, self._yellow)
+                    return
 
 
     def purge_max_exposed_building(self, num=-1):
