@@ -18,6 +18,9 @@ class PoliceDepartment(Building):
         """
         Building.__init__(self)
 
+        # turns to death
+        self._firethreshold = 2
+
         # private attributes to hold the properties so they appear read only
 
 

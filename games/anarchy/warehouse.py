@@ -22,6 +22,9 @@ class Warehouse(Building):
         self._exposure = 0
         self._fire_added = 0
 
+        # turns to death
+        self._firethreshold = 5 
+
 
 
     @property

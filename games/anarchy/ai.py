@@ -19,13 +19,6 @@ class AI(BaseAI):
         """ this is called once the game starts and your AI knows its player.id and game. You can initialize your AI here.
         """
         # configurable parameters
-        self.__firethreshold = 1
-        self._hq = None
-        
-        for warehouse in self.player.warehouses:
-            if warehouse.is_headquarters:
-                self._hq = warehouse
-
 
     def game_updated(self):
         """ this is called every time the game's state updates, so if you are tracking anything you can update it here.
@@ -48,7 +41,7 @@ class AI(BaseAI):
             bool: represents if you want to end your turn. true means end the turn, false means to keep your turn going and re-call runTurn()
         """
         # Put your game logic here for runTurn
-        self.warehouse_safety_check()
+        self.fire_safety_check()
 
         # get my first warehouse
         first_warehouse = self.player.warehouses[0]
@@ -107,9 +100,29 @@ class AI(BaseAI):
         # building can only be bribed if health is greater than 0, it hasn't already been bribed, and you own it
         return (building.health > 0 and not building.bribed and building.owner == self.game.current_player)
 
-    def warehouse_safety_check(self):
-        for building in self._hq.get_sides():
-            #FIXME: Check wind intesnity / possible directions
-            if building.fire > self.__firethreshold:
-                #FIXME: create array of directions internally
-                building.put_out_fire(self.player.fire_departments)
+    def fire_safety_check(self):
+        """
+        Fire safety check
+        This function prioritizes fire putting out fires by building importance.
+            Order defines this importance... later loops may not get to put out fires.
+        """
+        tokensLeft = 100 #FIXME: count tokens left. Each bribe remaining is a token.
+        fd = self.player.fire_departments
+
+        ###############
+        #FIXME: Check wind intensity / possible directions
+        ###############
+
+        # Biggest deal is hq safety
+        for building in self.player.headquarters.get_sides():
+            if building.fire > 1: # hardcoded, any fire
+                building.put_out_fire(fd)
+        
+        # Order here dictates who gets priority
+        buildings = [fd, self.player.weather_stations] #police_departments, warehouses
+
+        for bs in buildings:
+            for b in bs:
+                #FIXME: check for tokens
+                if building.needs_extinguish():
+                    building.put_out_fire(fd)

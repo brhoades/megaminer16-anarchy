@@ -21,6 +21,8 @@ class FireDepartment(Building):
         # private attributes to hold the properties so they appear read only
         self._fire_extinguished = 0
 
+        # Number of turns to burn before worrying
+        self._firethreshold = 5 
 
 
     @property

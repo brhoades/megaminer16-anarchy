@@ -18,8 +18,8 @@ class WeatherStation(Building):
         """
         Building.__init__(self)
 
-        # private attributes to hold the properties so they appear read only
-
+        # turns to death
+        self._firethreshold = 100000 # any number
 
 
 
