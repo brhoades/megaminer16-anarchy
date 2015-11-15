@@ -89,14 +89,20 @@ class AI(BaseAI):
         self.print_title("E2", self._black, self._blue)
         self.fire_safety_check(self.game.next_forecast.direction)
 
-        #panic the shell AIs
-        #self.ignite_useless_tiles()
+        #TODO: If low fires for us, increase intensity?
 
-        #TODO: If low fires, increase intensity?
-
-        self.print_title("RHQ", self._black, self._purple)
-        # purge any buildings, starting with hq, which may be easy kills
-        self.purge_max_exposed_building()
+        tries = 5
+        while self.player.bribes_remaining > 0 or tries <= 0:
+            i = random.randint(0,1)
+            tries -= 1
+            if i == 0:
+                # purge any buildings, starting with hq, which may be easy kills
+                self.print_title("RHQ", self._black, self._purple)
+                self.purge_max_exposed_building()
+            elif i == 1:
+                #panic the shell AIs
+                self.print_title("IU", self._black, self._yellow)
+                self.ignite_useless_tiles()
 
         self.print_title("IF", self._black, self._yellow)
         self.purge_fire_departments()
@@ -291,13 +297,15 @@ class AI(BaseAI):
                 break
 
 
-    def purge_max_exposed_building(self):
-        corruption = sorted(self.player.other_player.warehouses, key=lambda warehouses: warehouses.exposure)
-        if corruption[-1].exposure > 20:
-            for pd in self.player.police_departments:
-                if pd.is_usable and self.player.bribes_remaining > 0:
-                    pd.raid(corruption[-1])
-                    break
+    def purge_max_exposed_building(self, num=-1):
+        corruption = sorted(self.player.other_player.warehouses, key=lambda warehouses: warehouses.exposure, reverse=True)
+        for b in corruption:
+            if b.exposure > 20:
+                for pd in self.player.police_departments:
+                    if pd.is_usable and self.player.bribes_remaining > 0 and num != 0:
+                        pd.raid(b)
+                        num -= 1
+                        break
 
 
     def purge_fire_departments(self):
