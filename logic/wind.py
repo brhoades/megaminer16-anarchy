@@ -20,22 +20,28 @@ class WindAI:
         # in cover
         #############################
         if sides == 1:
-            if ohq.building_south is None and (f == "north" or f == "south"):
-                if hq.building_west is None or hq.building_west.fire <= hq.building_east.fire:
-                    return self.change_wind("east")
-                else:
-                    return self.change_wind("west")
+            # stalemate
+            if hq.building_south is None and f != "north":
+                return self.change_wind("north")
+            else:
+                return
+            if hq.building_north is None and f != "south":
+                return self.change_wind("south")
+            else:
+                return
 
             # Bingo. We want to make sure the wind always covers our ass
-            if ohq.building_east is None:
+            if hq.building_east is None:
                 return self.change_wind("west")
-            if ohq.building_west is None:
+            if hq.building_west is None:
                 return self.change_wind("east")
+            return # don't break something optimal
 
         if sides == 2:
             #############################
             # in corner
             #############################
+            #FIXME: uh, these should be ours. no wonder directions are backwards :>
             dirs = [ohq.building_north, ohq.building_east, ohq.building_south, \
                     ohq.building_west, ohq.building_north]
             for i in range(0,len(dirs)-1):
@@ -65,18 +71,20 @@ class WindAI:
             #############################
             if ohq.building_north is None and ohq.building_south is None:
                 #east->west tunnel
+                #FIXME: what are they going to extinguish? Make this take the most moves for them
                 if f == "east" or f == "west":
                     if hq.building_east is None or hq.building_east.fire <= hq.building_west.fire:
-                        return self.change_wind("west")
+                        return self.change_wind("north")
                     else:
-                        return self.change_wind("east")
+                        return self.change_wind("south")
             if ohq.building_west is None and ohq.building_east is None:
                 #north->south tunnel
                 if f == "east" or f == "west":
                     if hq.building_north is None or hq.building_north.fire <= hq.building_south.fire:
-                        return self.change_wind("south")
+                        return self.change_wind("east")
                     else:
-                        self.change_wind("north")
+                        return self.change_wind("west")
+            return # don't break something optimal
 
         #### can we do /anything/ to help ourselves? ############
         # point the wind where the fires are lowest on our side and highest on theirs
