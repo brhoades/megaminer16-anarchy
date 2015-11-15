@@ -129,7 +129,7 @@ class Building(GameObject):
     def get_sides(self):
         """List of adjacent buildings
         """
-        return [x for x in [self._building_east,self._building_north,self._building_south,self._building_west] if x is not None and x!=self]
+        return [x for x in [self._building_east,self._building_north,self._building_south,self._building_west] if x is not None]
 
     def needs_extinguish(self):
         """Has building met threshold for putting out?

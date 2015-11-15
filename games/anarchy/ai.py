@@ -105,7 +105,8 @@ class AI(BaseAI):
 
         # Biggest deal is hq safety
         for building in self.player.headquarters.get_sides():
-            if building.fire > 1: # hardcoded, any fire
+            # for some reason we get hq in here sometimes
+            if not building.is_headquarters and building.fire > 1: # hardcoded, any fire
                 building.put_out_fire(self)
         
         # Order here dictates who gets priority
@@ -113,7 +114,6 @@ class AI(BaseAI):
 
         for bs in buildings:
             for b in bs:
-                #FIXME: check for tokens
                 if b.needs_extinguish():
                      b.put_out_fire(self)
     
