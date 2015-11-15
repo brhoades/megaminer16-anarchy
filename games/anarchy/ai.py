@@ -41,9 +41,10 @@ class AI(BaseAI):
             bool: represents if you want to end your turn. true means end the turn, false means to keep your turn going and re-call runTurn()
         """
         # Put your game logic here for runTurn
-        self.fire_safety_check()
         print("")
         print("NEW TURN: ", end="")
+
+        self.fire_safety_check()
 
         # get my first warehouse
         for wh in self.player.warehouses:
