@@ -77,10 +77,10 @@ class AI(BaseAI):
             
             Returns fire target tile. None if there isn't one.
         """
-        ohq = self.other_player.headquarters.building_north
-        hq = self.headquarters
+        ohq = self.other_player.headquarters
+        hq = self.player.headquarters
         sides = 0
-        f = f
+        f = self.game.current_forecast
 
         for s in ohq.get_sides():
             if s is not None:
@@ -180,8 +180,9 @@ class AI(BaseAI):
         dirs = ["north", "west", "south", "east", "north"]
 
         for w in self.player.weather_stations:
-            ws = w
-            break
+            if w.is_usable:
+                ws = w
+                break
         
         for i in range(0,len(dirs)-1):
             if dirs[i] == f:
@@ -189,6 +190,12 @@ class AI(BaseAI):
                     return ws.rotate(True)
                 if i > 0 and dirs[i-1] == dir:
                     return ws.rotate()
+        # it's 2 away
+        ws.rotate()
+        for w in self.player.weather_stations:
+            if w.is_usable:
+                w.rotate()
+                break
 
 
     def can_be_bribed(self, building):
