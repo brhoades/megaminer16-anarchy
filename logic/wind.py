@@ -66,18 +66,19 @@ class WindAI:
             #############################
             if ohq.building_north is None and ohq.building_south is None:
                 #east->west tunnel
+                #FIXME: what are they going to extinguish? Make this take the most moves for them
                 if f == "east" or f == "west":
                     if hq.building_east is None or hq.building_east.fire <= hq.building_west.fire:
-                        return self.change_wind("west")
+                        return self.change_wind("north")
                     else:
-                        return self.change_wind("east")
+                        return self.change_wind("south")
             if ohq.building_west is None and ohq.building_east is None:
                 #north->south tunnel
                 if f == "east" or f == "west":
                     if hq.building_north is None or hq.building_north.fire <= hq.building_south.fire:
-                        return self.change_wind("south")
+                        return self.change_wind("east")
                     else:
-                        self.change_wind("north")
+                        return self.change_wind("west")
 
         #### can we do /anything/ to help ourselves? ############
         # point the wind where the fires are lowest on our side and highest on theirs
