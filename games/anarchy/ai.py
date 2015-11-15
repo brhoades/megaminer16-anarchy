@@ -173,6 +173,23 @@ class AI(BaseAI):
 
         return None
 
+    def change_wind(self, dir):
+        if self.game.current_forecast == dir:
+            return
+        f = self.game.current_forecast
+        dirs = ["north", "west", "south", "east", "north"]
+
+        for w in self.player.weather_stations:
+            ws = w
+            break
+        
+        for i in range(0,len(dirs)-1):
+            if dirs[i] == f:
+                if dirs[i+1] == dir:
+                    return ws.rotate(True)
+                if i > 0 and dirs[i-1] == dir:
+                    return ws.rotate()
+
 
     def can_be_bribed(self, building):
         """ This is an example of a utility function you could create.
