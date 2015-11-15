@@ -150,7 +150,6 @@ class Building(GameObject):
             return self.building_west
         if dir == "east":
             return self.building_east
-        return bd
 
     def get_building_by_wind(self, dir):
         if dir == "north":
