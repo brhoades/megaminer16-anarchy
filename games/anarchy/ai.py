@@ -183,7 +183,7 @@ class AI(BaseAI,WindAI):
 
     def attack_enemy_hq(self):
         ohq = self.player.other_player.headquarters
-        if ohq.exposure >= 15:
+        if ohq.exposure >= 1:
             for pd in self.player.police_departments:
                 if pd.is_usable and self.player.bribes_remaining > 0:
                     pd.raid(ohq)
