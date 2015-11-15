@@ -51,16 +51,41 @@ class AI(BaseAI):
         print("")
         print("NEW TURN: bribes={0}\t\t".format(self.player.bribes_remaining), end="")
 
-        self.set_fires(self.decide_wind())
+        ####################################################
+        #if self.game.current_turn % 2: #even (we moved first) strategy below
+
+        # change the wind in our favor
+        # if we don't do this here, we may never get a chance
+        print("|W|", end="")
+        self.decide_wind()
+
+        # our safety first, this turn
+        print("|E1|", end="")
+        self.fire_safety_check(self.game.current_forecast.direction)
+
+        # priority to burning them this turn, since they can't avoid it
+        print("|I1|", end="")
+        self.set_fires(self.game.current_forecast.direction)
+
+        # protect us, next turn
+        print("|E2|", end="")
+        self.fire_safety_check(self.game.next_forecast.direction)
+
+        # burn them next turn if we can
+        print("|I2|", end="")
+        self.set_fires(self.game.next_forecast.direction)
+
         # self.purge_fire_departments()
-        self.fire_safety_check()
         #FIXME: ^ spot
 
         # purge any buildings, starting with hq, which may be easy kills
-        self.purge_max_exposed_building()
+        #self.purge_max_exposed_building()
 
         # light their fire departments with remaining points
-        self.purge_fire_departments()
+        #self.purge_fire_departments()
+        
+        #end even strat
+        ####################################################
 
         if self.player.bribes_remaining > 0:
             print("{0}".format(self.player.bribes_remaining), end="")
@@ -69,8 +94,6 @@ class AI(BaseAI):
 
     def decide_wind(self):
         """Change wind if needed
-            
-            Returns fire target tile. None if there isn't one.
         """
         ohq = self.other_player.headquarters
         hq = self.player.headquarters
@@ -85,25 +108,53 @@ class AI(BaseAI):
         # at the end of turn. This function lets us decide where the wind blows at 
         # the end of the opponent's turn.
 
+        """
+        # point the wind where the fires are lowest on our side and highest on theirs
+        ohqs = [x for x in ohq.get_sides_true()]
+        hqs = [x for x in hq.get_sides_true()]
+
+        maxdiff = 0
+        maxdiffx = -1
+        maxdiffy = -1
+        for x in hqs:
+            for y in ohqs:
+                if x is None or y is None or x.is_headquarters or y.is_headquarters:
+                    continue
+                if x.fire < y.fire and y.fire-x.fire > maxdiff:
+                    maxdiffx = x
+                    maxdiffy = y
+                    maxdiff  = abs(x.fire-y.fire)
+
+        # relate direction back to hq
+        if maxdiff != 0:
+            if maxdiffy is ohq.building_north:
+                return self.change_wind("south") #it will take care of "already north"
+            if maxdiffy is ohq.building_south:
+                return self.change_wind("north")
+            if maxdiffy is ohq.building_east:
+                return self.change_wind("west")
+            if maxdiffy is ohq.building_west:
+                return self.change_wind("east")
+        """
+
+        
+        # below is for handling "all cases are equal" scenarios (ie first turn)
+
         #############################
         # in cover
         #############################
         if sides == 1:
             if ohq.building_south is None and (f == "north" or f == "south"):
                 if hq.building_west is None or hq.building_west.fire <= hq.building_east.fire:
-                    self.change_wind("east")
-                    return ohq.building_west
+                    return self.change_wind("east")
                 else:
-                    self.change_wind("west")
-                    return ohq.building_east
-                #FIXME: Is it ever worth it to go south?
-            if ohq.building_east is None and (f == "east" or f == "west"):
-                if hq.building_south is None or hq.building_south.fire <= hq.building_north.fire:
-                    self.change_wind("north")
-                    return ohq.building_south
-                else:
-                    self.change_wind("south")
-                    return ohq.building_north
+                    return self.change_wind("west")
+
+            # Bingo. We want to make sure the wind always covers our ass
+            if ohq.building_east is None:
+                return self.change_wind("west")
+            if ohq.building_west is None:
+                return self.change_wind("east")
 
         if sides == 2:
             #############################
@@ -115,41 +166,25 @@ class AI(BaseAI):
                 if dirs[i] is None and dirs[i+1] is None:
                     if i == 0:
                         #northeast
-                        #FIXME: It's more advantageous to protect ourselves with 2 moves if we canc
-
-                        if f == "south":
-                            self.change_wind("east")
-                            return ohq.building_west
-                        if f == "west":
-                            self.change_wind("north")
-                            return ohq.building_south
+                        # they'll have northwest, so we want wind blowing west always
+                        return self.change_wind("west")
 
                     if i == 1:
                         #southeast
-                        if f == "north":
-                            self.change_wind("east")
-                            return ohq.building_west
-                        if f == "west":
-                            self.change_wind("south")
-                            return ohq.building_north
+                        # they'll have southwest, so we want wind blowing west always
+                        return self.change_wind("west")
 
                     if i == 2:
                         #southwest
-                        if f == "north":
-                            self.change_wind("west")
-                            return ohq.building_east
-                        if f == "east":
-                            self.change_wind("south")
-                            return ohq.building_north
+                        # they'll have southeast, so we want wind blowing east always
+                            return self.change_wind("east")
 
                     if i == 3:
                         #northwest
-                        if f == "south":
-                            self.change_wind("west")
-                            return ohq.building_east
+                        # they'll have northeast, so we want wind blowing east always
                         if f == "east":
-                            self.change_wind("north")
-                            return ohq.building_south
+                            return self.change_wind("east")
+
             #############################
             # in tunnel
             #############################
@@ -157,47 +192,21 @@ class AI(BaseAI):
                 #east->west tunnel
                 if f == "east" or f == "west":
                     if hq.building_east is None or hq.building_east.fire <= hq.building_west.fire:
-                        self.change_wind("west")
-                        return ohq.building_east
+                        return self.change_wind("west")
                     else:
-                        self.change_wind("east")
-                        return ohq.building_west
+                        return self.change_wind("east")
             if ohq.building_west is None and ohq.building_east is None:
                 #north->south tunnel
                 if f == "east" or f == "west":
                     if hq.building_north is None or hq.building_north.fire <= hq.building_south.fire:
-                        self.change_wind("south")
-                        return ohq.building_north
+                        return self.change_wind("south")
                     else:
                         self.change_wind("next")
-                        return ohq.building_south
-
-
-
-        if sides == 3:
-            for s in ohq.get_sides():
-                if s is not None:
-                    return s
-
-        #############################
-        # in open / sides don't matter
-        #############################
-        if f == "north":
-            return ohq.building_south
-        if f == "south":
-            return ohq.building_north
-        if f == "east":
-            return ohq.building_west
-        if f == "west":
-            return ohq.building_east
-        
-
-        return None
 
     def change_wind(self, dir):
-        if self.game.current_forecast.direction == dir:
+        if self.game.next_forecast.direction == dir:
             return
-        f = self.game.current_forecast.direction
+        f = self.game.next_forecast.direction
         dirs = ["north", "west", "south", "east", "north"]
 
         for w in self.player.weather_stations:
@@ -229,34 +238,35 @@ class AI(BaseAI):
         # building can only be bribed if health is greater than 0, it hasn't already been bribed, and you own it
         return (building.health > 0 and not building.bribed and building.owner == self.game.current_player)
 
-    def fire_safety_check(self):
+    def fire_safety_check(self, f):
         """
         Fire safety check
         Put out fire in direction wind blows
-         MUST BE CALLED AFTER WIND DECISION
+        pass it which forecast to "fix"
         """
-        # fix end of our turn
-        b = self.player.headquarters.get_building_by_wind(self.game.current_forecast.direction)
-        if b is not None:
-            while b.fire > 0 and self.player.bribes_remaining > 0:
-                b.put_out_fire(self)
+        if self.player.bribes_remaining <= 0:
+            return
 
-        # fix end of their turn
-        b = self.player.headquarters.get_building_by_wind(self.game.next_forecast.direction)
+        b = self.player.headquarters.get_building_by_wind(f)
         if b is not None:
-            while b.fire > 0 and self.player.bribes_remaining > 0:
+            while b.fire > 0 and self.player.bribes_remaining > 0 and not b.is_headquarters:
                 b.put_out_fire(self)
             
     
-    def set_fires(self, target):
-        if target is None:
-            print("?", end="")
+    # always relative to enemy hq
+    def set_fires(self, f):
+        if self.player.bribes_remaining <= 0:
             return
 
         for wh in self.player.warehouses:
             if wh.is_headquarters or not wh.is_usable:
                 continue
-            if self.player.bribes_remaining > 0 and target.fire < 20:
+            target = self.other_player.headquarters.get_building_by_wind(f)
+            if target is None:
+                print("?", end="")
+                return
+
+            if self.player.bribes_remaining > 0 and target.fire < 18 and not target.is_headquarters: #18 as, ideally, we could be spending our shit better somewhere else
                 wh.ignite(target)
             else:
                 break
