@@ -75,7 +75,7 @@ class AI(BaseAI,WindAI):
         ####################################################
         # change the wind in our favor
         # if we don't do this here, we may never get a chance
-        print("|W|", end="")
+        self.print_title("W", self._bold, self._reset)
         self.decide_wind()
 
         # priority to burning them this turn, since they can't avoid it
