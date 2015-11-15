@@ -34,10 +34,10 @@ class AI(BaseAI,WindAI):
         self._reset   = '\033[0m'
         self._bold   = '\033[1m'
 
+        self._warehouse_from_hq = None
+
         # print header, newline is provided by the run_turn func
         print(self._green + "WA/FD/PD/WS\t" + self._red + "WA/FD/PD/WS\t" + self._reset + "BRIBES\t" + self._green + "HQ\t" + self._red +"HQ\t" + self._reset + "|PHASE|ACTIONS|PHASE|...")
-
-        self._warehouse_from_hq = {}
 
     def game_updated(self):
         """ this is called every time the game's state updates, so if you are tracking anything you can update it here.
