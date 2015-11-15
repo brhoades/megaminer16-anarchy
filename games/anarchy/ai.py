@@ -37,7 +37,7 @@ class AI(BaseAI,WindAI):
         self._warehouse_from_hq = None
 
         # print header, newline is provided by the run_turn func
-        print(self._green + "WA/FD/PD/WS\t" + self._red + "WA/FD/PD/WS\t" + self._reset + "BRIBES\t" + self._green + "HQ\t" + self._red +"HQ\t" + self._reset + "|PHASE|ACTIONS|PHASE|...")
+        self.log(self._green + "WA/FD/PD/WS\t" + self._red + "WA/FD/PD/WS\t" + self._reset + "BRIBES\t" + self._green + "HQ\t" + self._red +"HQ\t" + self._reset + "|PHASE|ACTIONS|PHASE|...")
 
     def game_updated(self):
         """ this is called every time the game's state updates, so if you are tracking anything you can update it here.
@@ -63,20 +63,23 @@ class AI(BaseAI,WindAI):
 
         p = self.player
         #structure info
-        print(self._green + "{0}/{1}/{2}/{3}\t".format(len(p.warehouses), 
+        self.log(self._green + "{0}/{1}/{2}/{3}\t".format(len(p.warehouses), 
             len(p.fire_departments), len(p.police_departments), len(p.weather_stations)), end="")
         p = self.other_player
-        print(self._red + "{0}/{1}/{2}/{3}\t".format(len(p.warehouses), 
+        self.log(self._red + "{0}/{1}/{2}/{3}\t".format(len(p.warehouses), 
             len(p.fire_departments), len(p.police_departments), len(p.weather_stations)), end="")
-        print((self._reset + "{0}\t" + self._green + "{1}\t" + self._red \
+        self.log((self._reset + "{0}\t" + self._green + "{1}\t" + self._red \
                 + "{2}" + self._reset + "\t").format(self.player.bribes_remaining, \
                 self.player.headquarters.health, self.other_player.headquarters.health), end="")
 
         ####################################################
         # change the wind in our favor
         # if we don't do this here, we may never get a chance
-        print("|W|", end="")
+        self.print_title("W", self._bold, self._reset)
         self.decide_wind()
+
+        # attack enemy HQ if they have 15 exposure or more
+        self.attack_enemy_hq()
 
         # priority to burning them this turn, since they can't avoid it
         self.print_title("I1", self._bold, self._red)
@@ -166,6 +169,15 @@ class AI(BaseAI,WindAI):
             else:
                 break
 
+    def attack_enemy_hq(self):
+        ohq = self.player.other_player.headquarters
+        if ohq.fire >= 15:
+            for pd in self.player.police_departments:
+                if pd.is_usable and self.player.bribes_remaining > 0:
+                    pd.raid(ohq)
+                    self.print_title("IHQ", self._bold, self._yellow)
+                    return
+
 
     def purge_max_exposed_building(self, num=-1):
         corruption = sorted(self.player.other_player.warehouses, key=lambda warehouses: warehouses.exposure, reverse=True)
@@ -209,5 +221,9 @@ class AI(BaseAI,WindAI):
                     continue
                 wh.ignite(t)
 
+    def log(self, message):
+        print(message)
+        return super(message)
+
     def print_title(self, title, color, after):
-        print(color+"|"+title+"|"+self._reset+after, end="")
+        self.log(color+"|"+title+"|"+self._reset+after, end="")
