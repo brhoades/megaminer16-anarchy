@@ -30,6 +30,9 @@ class AI(BaseAI):
         self._blue    = '\033[34m'
         self._black   = '\033[0m'
 
+        # print header, newline is provided by the run_turn func
+        print(self._green + "WA/FD/PD/WS\t" + self._red + "WA/FD/PD/WS\t" + "BRIBES\t" + self._green + "HQ\t" + self._red +"HQ\t" + self._black + "|PHASE|ACTIONS|PHASE|...", end="")
+
     def game_updated(self):
         """ this is called every time the game's state updates, so if you are tracking anything you can update it here.
         """
@@ -42,7 +45,6 @@ class AI(BaseAI):
             won (bool): won == true means you won, won == false means you lost
             reason (str): the reason why you won or lost
         """
-
 
     def run_turn(self):
         """ This is called every time the AI is asked to respond with a command during their turn
@@ -57,8 +59,15 @@ class AI(BaseAI):
             print("WE GO FIRST\n")
 
         print("")
-        print(("NEW TURN: bribes={0}\t" + self._green + "HQ={1}\t" + self._red \
-                + "HQ={2}" + self._black + "\t").format(self.player.bribes_remaining, \
+        p = self.player
+        #structure info
+        print(self._green + "{0}/{1}/{2}/{3}\t".format(len(p.warehouses), 
+            len(p.fire_departments), len(p.police_departments), len(p.weather_stations)), end="")
+        p = self.other_player
+        print(self._red + "{0}/{1}/{2}/{3}\t".format(len(p.warehouses), 
+            len(p.fire_departments), len(p.police_departments), len(p.weather_stations)), end="")
+        print(("{0}\t" + self._green + "{1}\t" + self._red \
+                + "{2}" + self._black + "\t").format(self.player.bribes_remaining, \
                 self.player.headquarters.health, self.other_player.headquarters.health), end="")
 
         ####################################################
