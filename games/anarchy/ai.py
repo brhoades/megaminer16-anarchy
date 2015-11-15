@@ -22,6 +22,14 @@ class AI(BaseAI):
         # configurable parameters
         self.other_player = self.player.other_player
 
+        self._red     = '\033[91m'
+        self._green   = '\033[92m'
+        self._yellow  = '\033[93m'
+        self._lpurple = '\033[94m'
+        self._purple  = '\033[95m'
+        self._blue    = '\033[34m'
+        self._black   = '\033[0m'
+
     def game_updated(self):
         """ this is called every time the game's state updates, so if you are tracking anything you can update it here.
         """
@@ -49,7 +57,9 @@ class AI(BaseAI):
             print("WE GO FIRST\n")
 
         print("")
-        print("NEW TURN: bribes={0}\t\t".format(self.player.bribes_remaining), end="")
+        print(("NEW TURN: bribes={0}\t" + self._green + "HQ={1}\t" + self._red \
+                + "HQ={2}" + self._black + "\t").format(self.player.bribes_remaining, \
+                self.player.headquarters.health, self.other_player.headquarters.health), end="")
 
         ####################################################
         #if self.game.current_turn % 2: #even (we moved first) strategy below
@@ -60,28 +70,31 @@ class AI(BaseAI):
         self.decide_wind()
 
         # priority to burning them this turn, since they can't avoid it
-        print("|I1|", end="")
+        self.print_title("I1", self._black, self._red)
         self.set_fires(self.game.current_forecast.direction)
 
         # burn them next turn if we can
-        print("|I2|", end="")
+        self.print_title("I2", self._black, self._red)
         self.set_fires(self.game.next_forecast.direction)
         
         # our safety, this turn
-        print("|E1|", end="")
+        self.print_title("E1", self._black, self._blue)
         self.fire_safety_check(self.game.current_forecast.direction)
 
         # protect us, next turn
-        print("|E2|", end="")
+        self.print_title("E2", self._black, self._blue)
         self.fire_safety_check(self.game.next_forecast.direction)
 
         #panic the shell AIs
         #self.ignite_useless_tiles()
 
+        self.print_title("RHQ", self._black, self._purple)
         # purge any buildings, starting with hq, which may be easy kills
         self.purge_max_exposed_building()
 
+        self.print_title("IF", self._black, self._yellow)
         self.purge_fire_departments()
+        print(self._black, end="")
 
         #end even strat
         ####################################################
@@ -307,3 +320,6 @@ class AI(BaseAI):
                 if t.is_headquarters or t.fire >= 18 or not wh.is_usable or self.player.bribes_remaining <= 0:
                     continue
                 wh.ignite(t)
+
+    def print_title(self, title, color, after):
+        print(color+"|"+title+"|"+after, end="")
