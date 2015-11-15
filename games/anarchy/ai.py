@@ -20,7 +20,7 @@ class AI(BaseAI):
         """ this is called once the game starts and your AI knows its player.id and game. You can initialize your AI here.
         """
         # configurable parameters
-        self._fireAllotment = 0.659
+        self._fireAllotment = 0.50
         self.other_player = self.player.other_player
 
     def game_updated(self):
