@@ -68,11 +68,15 @@ class AI(BaseAI,WindAI):
         
         p = self.player
         #structure info
-        print(self._green + "{0}/{1}/{2}/{3}\t".format(len(p.warehouses), 
-            len(p.fire_departments), len(p.police_departments), len(p.weather_stations)), end="")
+        print(self._green + "{0}/{1}/{2}/{3}\t".format(len([x for x in p.warehouses if x.health > 0]), 
+            len([x for x in p.fire_departments if x.health > 0]), 
+            len([x for x in p.police_departments if x.health > 0]), 
+            len([x for x in p.weather_stations if x.health > 0])), end="")
         p = self.other_player
-        print(self._red + "{0}/{1}/{2}/{3}\t".format(len(p.warehouses), 
-            len(p.fire_departments), len(p.police_departments), len(p.weather_stations)), end="")
+        print(self._red + "{0}/{1}/{2}/{3}\t".format(len([x for x in p.warehouses if x.health > 0]), 
+            len([x for x in p.fire_departments if x.health > 0]), 
+            len([x for x in p.police_departments if x.health > 0]), 
+            len([x for x in p.weather_stations if x.health > 0])), end="")
         print((self._reset + "{0}\t" + self._green + "{1}\t" + self._red \
                 + "{2}" + self._reset + "\t").format(self.player.bribes_remaining, \
                 self.player.headquarters.health, self.other_player.headquarters.health), end="")
