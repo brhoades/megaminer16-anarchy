@@ -165,25 +165,28 @@ class AI(BaseAI):
             for i in range(0,len(dirs)-1):
                 if dirs[i] is None and dirs[i+1] is None:
                     if i == 0:
+                        print("NORTHEAST CORNER")
                         #northeast
-                        # they'll have northwest, so we want wind blowing west always
-                        return self.change_wind("west")
+                        # they'll have northwest, so we want wind blowing east always
+                        return self.change_wind("east")
 
                     if i == 1:
+                        print("SOUTHEAST CORNER")
                         #southeast
-                        # they'll have southwest, so we want wind blowing west always
-                        return self.change_wind("west")
+                        # they'll have southwest, so we want wind blowing east always
+                        return self.change_wind("east")
 
                     if i == 2:
+                        print("SOUTHWEST CORNER")
                         #southwest
-                        # they'll have southeast, so we want wind blowing east always
-                            return self.change_wind("east")
+                        # they'll have southeast, so we want wind blowing west always
+                        return self.change_wind("west")
 
                     if i == 3:
+                        print("NORTHWEST CORNER")
                         #northwest
-                        # they'll have northeast, so we want wind blowing east always
-                        if f == "east":
-                            return self.change_wind("east")
+                        # they'll have northeast, so we want wind blowing west always
+                        return self.change_wind("west")
 
             #############################
             # in tunnel
@@ -201,7 +204,7 @@ class AI(BaseAI):
                     if hq.building_north is None or hq.building_north.fire <= hq.building_south.fire:
                         return self.change_wind("south")
                     else:
-                        self.change_wind("next")
+                        self.change_wind("north")
 
     def change_wind(self, dir):
         if self.game.next_forecast.direction == dir:
@@ -214,18 +217,24 @@ class AI(BaseAI):
                 ws = w
                 break
         
-        for i in range(0,len(dirs)-1):
+        print("\nREQ:" + dir + "\tCUR: " + self.game.next_forecast.direction)
+        for i in range(0,len(dirs)):
             if dirs[i] == f:
-                if dirs[i+1] == dir:
-                    return ws.rotate(True)
+                if i < len(dirs)-1 and dirs[i+1] == dir:
+                    ws.rotate(True)
+                    print("\nPOST\tREQ:" + dir + "\tCUR: " + self.game.next_forecast.direction)
+                    return
                 if i > 0 and dirs[i-1] == dir:
-                    return ws.rotate()
+                    ws.rotate()
+                    print("\nPOST\tREQ:" + dir + "\tCUR: " + self.game.next_forecast.direction)
+                    return
         # it's 2 away
         ws.rotate()
         for w in self.player.weather_stations:
             if w.is_usable:
                 w.rotate()
                 break
+        print("\nPOST\tREQ:" + dir + "\tCUR: " + self.game.next_forecast.direction)
 
 
     def can_be_bribed(self, building):
