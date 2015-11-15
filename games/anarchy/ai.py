@@ -49,8 +49,8 @@ class AI(BaseAI):
         print("")
         print("NEW TURN: bribes={0}\t\t".format(self.player.bribes_remaining), end="")
 
-        self.fire_safety_check()
         self.set_fires()
+        self.fire_safety_check()
 
         # get my first fire department
         first_fire_department = self.player.fire_departments[0]
@@ -127,7 +127,7 @@ class AI(BaseAI):
             # THIS IS GOOT
             warehouse_by_dist[wh] = abs(wh.x + enemy_hq.x) + abs(wh.y + enemy_hq.y)
         for wh in sorted(warehouse_by_dist, key=warehouse_by_dist.get, reverse=True):
-            if self.player.bribes_remaining == 0:
+            if self.player.bribes_remaining <= self._max_bribes*(1-self._fireAllotment):
                 break
 
             if not wh.is_headquarters and self.can_be_bribed(wh):
