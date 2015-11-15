@@ -20,7 +20,7 @@ class AI(BaseAI):
         """ this is called once the game starts and your AI knows its player.id and game. You can initialize your AI here.
         """
         # configurable parameters
-        self._maxExtinguishTokensUsed=5
+        self._fireAllotment = 0.8
 
     def game_updated(self):
         """ this is called every time the game's state updates, so if you are tracking anything you can update it here.
@@ -42,6 +42,7 @@ class AI(BaseAI):
         Returns:
             bool: represents if you want to end your turn. true means end the turn, false means to keep your turn going and re-call runTurn()
         """
+        self._max_bribes = self.player.bribes_remaining
         # Put your game logic here for runTurn
         print("")
         print("NEW TURN: bribes={0}\t\t".format(self.player.bribes_remaining), end="")
@@ -105,9 +106,6 @@ class AI(BaseAI):
             # for some reason we get hq in here sometimes
             if not building.is_headquarters and building.fire > 1: # hardcoded, any fire
                 building.put_out_fire(self)
-
-        if self.player.bribes_remaining < self._maxExtinguishTokensUsed:
-            return
         
         # Order here dictates who gets priority
         buildings = [self.player.fire_departments, self.player.weather_stations] #police_departments, warehouses
