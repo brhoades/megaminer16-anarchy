@@ -134,7 +134,7 @@ class Building(GameObject):
     def needs_extinguish(self):
         """Has building met threshold for putting out?
         """
-        return self.time_until_death > self._firethreshold
+        return self.time_until_death <= self._firethreshold
 
     # <<-- Creer-Merge: functions -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
     # if you want to add any client side logic (such as state checking functions) this is where you can add them

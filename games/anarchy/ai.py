@@ -20,6 +20,7 @@ class AI(BaseAI):
         """ this is called once the game starts and your AI knows its player.id and game. You can initialize your AI here.
         """
         # configurable parameters
+        self._maxExtinguishTokensUsed=5
 
     def game_updated(self):
         """ this is called every time the game's state updates, so if you are tracking anything you can update it here.
@@ -99,13 +100,14 @@ class AI(BaseAI):
         This function prioritizes fire putting out fires by building importance.
             Order defines this importance... later loops may not get to put out fires.
         """
-        tokensLeft = 100 #FIXME: count tokens left. Each bribe remaining is a token.
-
         # Biggest deal is hq safety
         for building in self.player.headquarters.get_sides():
             # for some reason we get hq in here sometimes
             if not building.is_headquarters and building.fire > 1: # hardcoded, any fire
                 building.put_out_fire(self)
+
+        if self.player.bribes_remaining < self._maxExtinguishTokensUsed:
+            return
         
         # Order here dictates who gets priority
         buildings = [self.player.fire_departments, self.player.weather_stations] #police_departments, warehouses
@@ -113,7 +115,7 @@ class AI(BaseAI):
         for bs in buildings:
             for b in bs:
                 if b.needs_extinguish():
-                     b.put_out_fire(self)
+                    b.put_out_fire(self)
     
     def set_fires(self):
         for wh in self.player.warehouses:
