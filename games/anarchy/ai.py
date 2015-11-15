@@ -109,10 +109,6 @@ class AI(BaseAI):
         tokensLeft = 100 #FIXME: count tokens left. Each bribe remaining is a token.
         fd = self.player.fire_departments
 
-        ###############
-        #FIXME: Check wind intensity / possible directions
-        ###############
-
         # Biggest deal is hq safety
         for building in self.player.headquarters.get_sides():
             if building.fire > 1: # hardcoded, any fire
