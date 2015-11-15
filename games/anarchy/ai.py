@@ -78,6 +78,7 @@ class AI(BaseAI):
             Returns fire target tile. None if there isn't one.
         """
         ohq = self.other_player.headquarters.building_north
+        hq = self.headquarters
         sides = 0
         f = f
 
@@ -89,18 +90,21 @@ class AI(BaseAI):
         # in cover
         #############################
         if sides == 1:
-            if ohq.building_south and f == "north":
-                #change
-                pass
-            if ohq.building_east and f == "west":
-                #change
-                pass
-            if ohq.building_north and f == "south":
-                #change
-                pass
-            if ohq.building_west and f == "east":
-                #change
-                pass
+            if ohq.building_south is None and (f == "north" or f == "south"):
+                if hq.building_west is None or hq.building_west.fire <= hq.building_east.fire:
+                    self.change_wind_direction("east")
+                    return ohq.building_west
+                else:
+                    self.change_wind_direction("west")
+                    return ohq.building_east
+                #FIXME: Is it ever worth it to go south?
+            if ohq.building_east is None and (f == "east" or f == "west"):
+                if hq.building_south is None or hq.building_south.fire <= hq.building_north.fire:
+                    self.change_wind_direction("north")
+                    return ohq.building_south
+                else:
+                    self.change_wind_direction("south")
+                    return ohq.building_north
 
         if sides == 2:
             #############################
@@ -145,14 +149,13 @@ class AI(BaseAI):
                     pass #change
 
             if ohq.building_west is None and ohq.building_east is None:
+                pass
 
 
 
         if sides == 3:
-            # we lost
-            #FIXME: change wind
             for s in ohq.get_sides():
-                if is is not None:
+                if s is not None:
                     return s
 
         #############################
