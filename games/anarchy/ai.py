@@ -86,19 +86,6 @@ class AI(BaseAI):
                 sides += 1
 
         #############################
-        # in open
-        #############################
-        if sides == 0:
-            if self.game.current_forcast == "north":
-                return ohq.building_south
-            if f == "south":
-                return ohq.building_north
-            if f == "east":
-                return ohq.building_west
-            if f == "west":
-                return ohq.building_east
-        
-        #############################
         # in cover
         #############################
         if sides == 1:
@@ -117,10 +104,6 @@ class AI(BaseAI):
                         if f == "south" or f == "west":
                             # change
                             pass
-                        if f == "north":
-                            return ohq.building_south
-                        if f == "east":
-                            return ohq.building_west
 
                         return ohq.building_south
 
@@ -129,34 +112,30 @@ class AI(BaseAI):
                         if f == "north" or f == "west":
                             # change
                             pass
-                        if f == "south":
-                            return ohq.building_north
-                        if f == "east":
-                            return ohq.building_west
 
                     if i == 2:
                         #southwest
                         if f == "north" or f == "east":
                             #change
                             pass
-                        if f == "south":
-                            return ohq.building_north
-                        if f == "west":
-                            return ohq.building_east
 
                     if i == 3:
                         #northwest
                         if f == "south" or f == "east":
                             #change
                             pass
-                        if f == "north":
-                            return ohq.building_south
-                        if f == "west":
-                            return ohq.building_east
             #############################
             # in alley
             #############################
-            #FIXME
+            if ohq.building_north is None and ohq.building_south is None:
+                if f == "north":
+                    pass # change
+                elif f == "south": 
+                    pass #change
+
+            if ohq.building_west is None and ohq.building_east is None:
+
+
 
         if sides == 3:
             # we lost
@@ -164,6 +143,19 @@ class AI(BaseAI):
             for s in ohq.get_sides():
                 if is is not None:
                     return s
+
+        #############################
+        # in open / sides don't matter
+        #############################
+        if f == "north":
+            return ohq.building_south
+        if f == "south":
+            return ohq.building_north
+        if f == "east":
+            return ohq.building_west
+        if f == "west":
+            return ohq.building_east
+        
 
         return None
 
