@@ -1,6 +1,7 @@
 # This is where you build your AI for the Anarchy game.
 
 from joueur.base_ai import BaseAI
+import random
 
 class AI(BaseAI):
     """ the basic AI functions that are the same between games
@@ -45,15 +46,7 @@ class AI(BaseAI):
         print("")
         print("NEW TURN: ", end="")
 
-        # get my first warehouse
-        for wh in self.player.warehouses:
-            if self.can_be_bribed(wh) and self.player.bribes_remaining > 0:
-                # select the enemy's first building as the target
-                target = self.player.other_player.headquarters.get_sides()[0]
-                # make sure the target isn't a headquarters which can't be ignited directly
-                if not target.is_headquarters:
-                    # bribe my first warehouse to ignite the enemy's first building
-                    wh.ignite(target)
+        self.set_fires()
 
         # get my first fire department
         first_fire_department = self.player.fire_departments[0]
@@ -119,8 +112,15 @@ class AI(BaseAI):
         # Order here dictates who gets priority
         buildings = [fd, self.player.weather_stations] #police_departments, warehouses
 
-        for bs in buildings:
-            for b in bs:
+        # for bs in buildings:
+            # for b in bs:
                 #FIXME: check for tokens
-                if b.needs_extinguish() and self.player.bribes_remaining > 0:
-                    b.put_out_fire(fd)
+                # if b.needs_extinguish() and self.player.bribes_remaining > 0:
+                    # b.put_out_fire(fd)
+    
+    def set_fires(self):
+        for wh in self.player.warehouses:
+            if self.player.bribes_remaining > 0 and self.can_be_bribed(wh):
+                # select random building next to enemy headquarter
+                target = random.choice(self.player.other_player.headquarters.get_sides())
+                wh.ignite(target)
