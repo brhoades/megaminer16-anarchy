@@ -37,7 +37,7 @@ class AI(BaseAI,WindAI):
         self._warehouse_from_hq = None
 
         # print header, newline is provided by the run_turn func
-        self.log(self._green + "WA/FD/PD/WS\t" + self._red + "WA/FD/PD/WS\t" + self._reset + "BRIBES\t" + self._green + "HQ\t" + self._red +"HQ\t" + self._reset + "|PHASE|ACTIONS|PHASE|...")
+        print(self._green + "WA/FD/PD/WS\t" + self._red + "WA/FD/PD/WS\t" + self._reset + "BRIBES\t" + self._green + "HQ\t" + self._red +"HQ\t" + self._reset + "|PHASE|ACTIONS|PHASE|...")
 
     def game_updated(self):
         """ this is called every time the game's state updates, so if you are tracking anything you can update it here.
@@ -61,19 +61,19 @@ class AI(BaseAI,WindAI):
         # Put your game logic here for runTurn
         self._max_bribes = self.player.bribes_remaining
         
-        if self.player.headquarters.health > 150:
+        if self.player.headquarters.health > 200:
             target = self.get_closest_wh(self.player.headquarters, 10, 10)
             if target:
-                wh.ignite(target)
+                self.player.headquarters.ignite(target)
         
         p = self.player
         #structure info
-        self.log(self._green + "{0}/{1}/{2}/{3}\t".format(len(p.warehouses), 
+        print(self._green + "{0}/{1}/{2}/{3}\t".format(len(p.warehouses), 
             len(p.fire_departments), len(p.police_departments), len(p.weather_stations)), end="")
         p = self.other_player
-        self.log(self._red + "{0}/{1}/{2}/{3}\t".format(len(p.warehouses), 
+        print(self._red + "{0}/{1}/{2}/{3}\t".format(len(p.warehouses), 
             len(p.fire_departments), len(p.police_departments), len(p.weather_stations)), end="")
-        self.log((self._reset + "{0}\t" + self._green + "{1}\t" + self._red \
+        print((self._reset + "{0}\t" + self._green + "{1}\t" + self._red \
                 + "{2}" + self._reset + "\t").format(self.player.bribes_remaining, \
                 self.player.headquarters.health, self.other_player.headquarters.health), end="")
 
@@ -135,8 +135,9 @@ class AI(BaseAI,WindAI):
         dist_to_bd = {}
         for wh in self.player.other_player.warehouses:
             dist_to_bd[wh] = dist(wh, building)
-        for wh in sorted(dist_to_bd, key=dist_to_hq.get):
-            if dist <= dist_thresh and wh.fire <= fire_thresh:
+        for wh in sorted(dist_to_bd, key=dist_to_bd.get):
+            if dist_to_bd[wh] <= dist_thresh and wh.fire <= fire_thresh\
+                and not wh.is_headquarters:
                 return wh
         return None
         
@@ -169,19 +170,27 @@ class AI(BaseAI,WindAI):
     def set_fires(self, f):
         if self.player.bribes_remaining <= 0:
             return
+        for ewh in self.other_player.headquarters.get_sides():
+            warehouse_by_dist = dict()
+            for wh in self.player.warehouses:
+                if not wh.is_headquarters:
+                    warehouse_by_dist[wh] = abs(wh.x - ewh.x) + abs(wh.y - ewh.y)
+            for wh in sorted(warehouse_by_dist, key=warehouse_by_dist.get, reverse=True):
+                if wh.is_usable and ewh.fire <= 18:
+                    wh.ignite(ewh)
+                    break
+        # for wh in self.player.warehouses:
+        #     if wh.is_headquarters or not wh.is_usable:
+        #         continue
+        #     target = self.other_player.headquarters.get_building_by_wind(f)
 
-        for wh in self.player.warehouses:
-            if wh.is_headquarters or not wh.is_usable:
-                continue
-            target = self.other_player.headquarters.get_building_by_wind(f)
+        #     if target is None:
+        #         return
 
-            if target is None:
-                return
-
-            if self.player.bribes_remaining > 0 and target.fire < 18 and not target.is_headquarters: #18 as, ideally, we could be spending our shit better somewhere else
-                wh.ignite(target)
-            else:
-                break
+        #     if self.player.bribes_remaining > 0 and target.fire < 18 and not target.is_headquarters: #18 as, ideally, we could be spending our shit better somewhere else
+        #         wh.ignite(target)
+        #     else:
+        #         break
 
     def attack_enemy_hq(self):
         ohq = self.player.other_player.headquarters
@@ -235,13 +244,8 @@ class AI(BaseAI,WindAI):
                     continue
                 wh.ignite(t)
 
-    def log(self, message):
-        print(message)
-        return super(message)
-
     def print_title(self, title, color, after):
-        self.log(color+"|"+title+"|"+self._reset+after, end="")
-
+        print(color+"|"+title+"|"+self._reset+after, end="")
+    
 def dist(a, b):
     return abs(a.x - b.x) + abs(a.y - b.y)
-    
