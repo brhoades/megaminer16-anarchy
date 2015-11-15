@@ -155,19 +155,27 @@ class AI(BaseAI,WindAI):
     def set_fires(self, f):
         if self.player.bribes_remaining <= 0:
             return
+        for ewh in self.other_player.headquarters.get_sides():
+            warehouse_by_dist = dict()
+            for wh in self.player.warehouses:
+                if not wh.is_headquarters:
+                    warehouse_by_dist[wh] = abs(wh.x - ewh.x) + abs(wh.y - ewh.y)
+            for wh in sorted(warehouse_by_dist, key=warehouse_by_dist.get, reverse=True):
+                if wh.is_usable and ewh.fire <= 18:
+                    wh.ignite(ewh)
+                    break
+        # for wh in self.player.warehouses:
+        #     if wh.is_headquarters or not wh.is_usable:
+        #         continue
+        #     target = self.other_player.headquarters.get_building_by_wind(f)
 
-        for wh in self.player.warehouses:
-            if wh.is_headquarters or not wh.is_usable:
-                continue
-            target = self.other_player.headquarters.get_building_by_wind(f)
+        #     if target is None:
+        #         return
 
-            if target is None:
-                return
-
-            if self.player.bribes_remaining > 0 and target.fire < 18 and not target.is_headquarters: #18 as, ideally, we could be spending our shit better somewhere else
-                wh.ignite(target)
-            else:
-                break
+        #     if self.player.bribes_remaining > 0 and target.fire < 18 and not target.is_headquarters: #18 as, ideally, we could be spending our shit better somewhere else
+        #         wh.ignite(target)
+        #     else:
+        #         break
 
     def attack_enemy_hq(self):
         ohq = self.player.other_player.headquarters
