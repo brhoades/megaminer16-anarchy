@@ -121,7 +121,7 @@ class AI(BaseAI):
         
         for wh in self.player.warehouses:
             warehouse_by_dist[wh] = abs(wh.x + enemy_hq.x) + abs(wh.y + enemy_hq.y)
-        for wh in sorted(warehouse_by_dist, key=warehouse_by_dist.get):
+        for wh in sorted(warehouse_by_dist, key=warehouse_by_dist.get, reverse=True):
             if self.player.bribes_remaining > 0 and self.can_be_bribed(wh):
                 # select random building next to enemy headquarter
                 target = random.choice(self.player.other_player.headquarters.get_sides())
