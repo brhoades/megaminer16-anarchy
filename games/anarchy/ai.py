@@ -144,7 +144,7 @@ class AI(BaseAI,WindAI):
 
         b = self.player.headquarters.get_building_by_wind(f)
         if b is not None:
-            while b.fire > 0 and self.player.bribes_remaining > 0 and not b.is_headquarters:
+            if b.fire > 0 and self.player.bribes_remaining > 0 and not b.is_headquarters:
                 b.put_out_fire(self)
             
     

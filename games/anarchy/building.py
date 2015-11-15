@@ -135,11 +135,6 @@ class Building(GameObject):
         """List of adjacent buildings
         """
         return [x for x in [self._building_east,self._building_north,self._building_south,self._building_west]]
-
-    def needs_extinguish(self):
-        """Has building met threshold for putting out?
-        """
-        return self.time_until_death <= self._firethreshold
     
     def get_building_by_dir(self, dir):
         if dir == "north":
@@ -171,7 +166,9 @@ class Building(GameObject):
         Args:
             fire_departments: List of player owned fire departments
         """
+        if self.is_headquarters:
+            return
         for dep in ai.player.fire_departments:
-            if self.needs_extinguish and dep.is_usable \
+            if self.fire > 0 and dep.is_usable\
                 and ai.player.bribes_remaining > 0:
                 dep.extinguish(self)
