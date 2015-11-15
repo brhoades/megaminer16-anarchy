@@ -49,6 +49,7 @@ class AI(BaseAI):
         print("")
         print("NEW TURN: bribes={0}\t\t".format(self.player.bribes_remaining), end="")
 
+        # self.purge_fire_departments()
         self.set_fires()
         self.fire_safety_check()
 
@@ -132,3 +133,16 @@ class AI(BaseAI):
         if corruption[-1].exposure > 20:
             #FIXME: change to next available police department
             self.player.police_departments[0].raid(corruption[-1])
+
+
+    def purge_fire_departments(self):
+        for fd in self.player.other_player.fire_departments:
+            if self.player.bribes_remaining < 1:
+                return
+            warehouse_by_dist = dict()
+            for wh in self.player.warehouses:
+                warehouse_by_dist[wh] = abs(wh.x - fd.x) + abs(wh.y - fd.y)
+            for wh in sorted(warehouse_by_dist, key=warehouse_by_dist.get, reverse=True):
+                if self.can_be_bribed(wh) and fd.fire < 18:
+                    wh.ignite(fd)
+                    break
