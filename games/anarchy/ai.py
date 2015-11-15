@@ -54,25 +54,6 @@ class AI(BaseAI):
         self.fire_safety_check()
         #FIXME: ^ spot
 
-        """
-        # get my first weather station
-        first_weather_station = self.player.weather_stations[0]
-        if self.can_be_bribed(first_weather_station) and self.player.bribes_remaining > 0:
-            # make sure the weather forecast is not already at maximum intensity
-            if self.game.next_forecast.intensity < self.game.max_forecast_intensity:
-                # bribe my first weather station to intensify the wind
-                first_weather_station.intensify()
-            else:
-                # bribe my first weather station to deintensify the wind
-                first_weather_station.intensify(True)
-
-        # get my second weather station
-        second_weather_station = self.player.weather_stations[1]
-        if self.can_be_bribed(second_weather_station) and self.player.bribes_remaining > 0:
-            # bribe my second weather station to rotate the wind clockwise
-            second_weather_station.rotate()
-        """
-        
         return True
 
     def decide_wind(self):
@@ -232,23 +213,14 @@ class AI(BaseAI):
     def fire_safety_check(self):
         """
         Fire safety check
-        This function prioritizes fire putting out fires by building importance.
-            Order defines this importance... later loops may not get to put out fires.
+        Put out fire in direction wind blows
         """
-        # Biggest deal is hq safety
-        for building in self.player.headquarters.get_sides():
-            # for some reason we get hq in here sometimes
-            if not building.is_headquarters and building.fire > 1: # hardcoded, any fire
-                building.put_out_fire(self)
-        
-        # Order here dictates who gets priority
-        #buildings = [self.player.fire_departments]#weather_stations, police_departments, warehouses
-        buildings = []
-
-        for bs in buildings:
-            for b in bs:
-                if b.needs_extinguish():
-                    b.put_out_fire(self)
+        b = self.player.headquarters.get_building_by_wind(self.game.current_forecast.direction)
+        if b is None:
+            return
+        while b.fire > 0 and self.player.bribes_remaining > 0:
+            b.put_out_fire(self)
+            
     
     def set_fires(self, target):
         if target is None:

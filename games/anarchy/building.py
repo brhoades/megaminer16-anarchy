@@ -137,16 +137,25 @@ class Building(GameObject):
         return self.time_until_death <= self._firethreshold
     
     def get_building_by_dir(self, dir):
-        bd = None
         if dir == "north":
-            bd = self.player.headquarters.building_north
+            return self.building_north
         if dir == "south":
-            bd = self.player.headquarters.building_south
+            return self.building_south
         if dir == "west":
-            bd = self.player.headquarters.building_west
+            return self.building_west
         if dir == "east":
-            bd = self.player.headquarters.building_east
+            return self.building_east
         return bd
+
+    def get_building_by_wind(self, dir):
+        if dir == "north":
+            return self.building_south
+        if dir == "south":
+            return self.building_north
+        if dir == "west":
+            return self.building_east
+        if dir == "east":
+            return self.building_west
     
     # <<-- Creer-Merge: functions -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
     # if you want to add any client side logic (such as state checking functions) this is where you can add them
