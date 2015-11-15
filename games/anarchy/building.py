@@ -147,5 +147,5 @@ class Building(GameObject):
             fire_departments: List of player owned fire departments
         """
         for dep in ai.player.fire_departments:
-            if self.fire > 0 and dep.is_usable and ai.player.bribes_remaining:
+            if self.fire > 0 and dep.is_usable and ai.player.bribes_remaining > 0:
                 dep.extinguish(self)
