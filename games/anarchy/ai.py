@@ -21,6 +21,7 @@ class AI(BaseAI):
         """
         # configurable parameters
         self._fireAllotment = 0.659
+        self.other_player = self.player.other_player
 
     def game_updated(self):
         """ this is called every time the game's state updates, so if you are tracking anything you can update it here.
@@ -42,7 +43,6 @@ class AI(BaseAI):
         Returns:
             bool: represents if you want to end your turn. true means end the turn, false means to keep your turn going and re-call runTurn()
         """
-        self._max_bribes = self.player.bribes_remaining
         # Put your game logic here for runTurn
         print("")
         print("NEW TURN: bribes={0}\t\t".format(self.player.bribes_remaining), end="")
@@ -108,7 +108,7 @@ class AI(BaseAI):
                 building.put_out_fire(self)
         
         # Order here dictates who gets priority
-        buildings = [self.player.fire_departments]#, self.player.weather_stations] #police_departments, warehouses
+        buildings = [self.player.fire_departments]#weather_stations, police_departments, warehouses
 
         for bs in buildings:
             for b in bs:
