@@ -21,6 +21,7 @@ class AI(BaseAI):
         """
         # configurable parameters
         self._fireAllotment = 0.50
+        self._max_bribes = self.player.bribes_remaining
         self.other_player = self.player.other_player
 
     def game_updated(self):
