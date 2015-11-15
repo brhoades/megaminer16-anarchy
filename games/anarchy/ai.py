@@ -163,7 +163,7 @@ class AI(BaseAI,WindAI):
             for wh in self.player.warehouses:
                 if not wh.is_headquarters:
                     warehouse_by_dist[wh] = abs(wh.x - b.x) + abs(wh.y - b.y)
-            for wh in sorted(warehouse_by_dist, key=warehouse_by_dist.get, reverse=True):
+            for wh in sorted(warehouse_by_dist, key=warehouse_by_dist.get, reverse=False):
                 if wh.is_usable and b.fire <= 18 and not b.is_headquarters:
                     wh.ignite(b)
                     break
@@ -209,7 +209,7 @@ class AI(BaseAI,WindAI):
             for wh in self.player.warehouses:
                 if not wh.is_headquarters:
                     warehouse_by_dist[wh] = abs(wh.x - fd.x) + abs(wh.y - fd.y)
-            for wh in sorted(warehouse_by_dist, key=warehouse_by_dist.get, reverse=True):
+            for wh in sorted(warehouse_by_dist, key=warehouse_by_dist.get, reverse=False):
                 if wh.is_usable and fd.fire < 18:
                     wh.ignite(fd)
                     break
