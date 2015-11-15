@@ -60,7 +60,12 @@ class AI(BaseAI,WindAI):
         """
         # Put your game logic here for runTurn
         self._max_bribes = self.player.bribes_remaining
-
+        
+        if self.player.headquarters.health > 150:
+            target = self.get_closest_wh(self.player.headquarters, 10, 10)
+            if target:
+                wh.ignite(target)
+        
         p = self.player
         #structure info
         self.log(self._green + "{0}/{1}/{2}/{3}\t".format(len(p.warehouses), 
@@ -125,7 +130,16 @@ class AI(BaseAI,WindAI):
         print("")
 
         return True
-
+    
+    def get_closest_wh(self, building, fire_thresh, dist_thresh):
+        dist_to_bd = {}
+        for wh in self.player.other_player.warehouses:
+            dist_to_bd[wh] = dist(wh, building)
+        for wh in sorted(dist_to_bd, key=dist_to_hq.get):
+            if dist <= dist_thresh and wh.fire <= fire_thresh:
+                return wh
+        return None
+        
     def can_be_bribed(self, building):
         """ This is an example of a utility function you could create.
 
@@ -227,3 +241,7 @@ class AI(BaseAI,WindAI):
 
     def print_title(self, title, color, after):
         self.log(color+"|"+title+"|"+self._reset+after, end="")
+
+def dist(a, b):
+    return abs(a.x - b.x) + abs(a.y - b.y)
+    
