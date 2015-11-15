@@ -99,7 +99,7 @@ class AI(BaseAI):
                 # purge any buildings, starting with hq, which may be easy kills
                 self.print_title("RHQ", self._black, self._purple)
                 self.purge_max_exposed_building()
-            elif i == 1:
+            elif i == 1: # pretty sure this just doesn't work
                 #panic the shell AIs
                 self.print_title("IU", self._black, self._yellow)
                 self.ignite_useless_tiles()
