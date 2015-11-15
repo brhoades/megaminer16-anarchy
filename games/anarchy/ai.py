@@ -37,7 +37,7 @@ class AI(BaseAI,WindAI):
         self._warehouse_from_hq = None
 
         # print header, newline is provided by the run_turn func
-        self.log(self._green + "WA/FD/PD/WS\t" + self._red + "WA/FD/PD/WS\t" + self._reset + "BRIBES\t" + self._green + "HQ\t" + self._red +"HQ\t" + self._reset + "|PHASE|ACTIONS|PHASE|...")
+        print(self._green + "WA/FD/PD/WS\t" + self._red + "WA/FD/PD/WS\t" + self._reset + "BRIBES\t" + self._green + "HQ\t" + self._red +"HQ\t" + self._reset + "|PHASE|ACTIONS|PHASE|...")
 
     def game_updated(self):
         """ this is called every time the game's state updates, so if you are tracking anything you can update it here.
@@ -63,12 +63,12 @@ class AI(BaseAI,WindAI):
 
         p = self.player
         #structure info
-        self.log(self._green + "{0}/{1}/{2}/{3}\t".format(len(p.warehouses), 
+        print(self._green + "{0}/{1}/{2}/{3}\t".format(len(p.warehouses), 
             len(p.fire_departments), len(p.police_departments), len(p.weather_stations)), end="")
         p = self.other_player
-        self.log(self._red + "{0}/{1}/{2}/{3}\t".format(len(p.warehouses), 
+        print(self._red + "{0}/{1}/{2}/{3}\t".format(len(p.warehouses), 
             len(p.fire_departments), len(p.police_departments), len(p.weather_stations)), end="")
-        self.log((self._reset + "{0}\t" + self._green + "{1}\t" + self._red \
+        print((self._reset + "{0}\t" + self._green + "{1}\t" + self._red \
                 + "{2}" + self._reset + "\t").format(self.player.bribes_remaining, \
                 self.player.headquarters.health, self.other_player.headquarters.health), end="")
 
@@ -221,9 +221,5 @@ class AI(BaseAI,WindAI):
                     continue
                 wh.ignite(t)
 
-    def log(self, message):
-        print(message)
-        return super(message)
-
     def print_title(self, title, color, after):
-        self.log(color+"|"+title+"|"+self._reset+after, end="")
+        print(color+"|"+title+"|"+self._reset+after, end="")
