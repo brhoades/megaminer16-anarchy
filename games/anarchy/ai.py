@@ -116,7 +116,12 @@ class AI(BaseAI):
                      b.put_out_fire(self)
     
     def set_fires(self):
+        warehouse_by_dist = dict()
+        enemy_hq = self.player.other_player.headquarters
+        
         for wh in self.player.warehouses:
+            warehouse_by_dist[wh] = abs(wh.x + enemy_hq.x) + abs(wh.y + enemy_hq.y)
+        for wh in sorted(warehouse_by_dist, key=warehouse_by_dist.get):
             if self.player.bribes_remaining > 0 and self.can_be_bribed(wh):
                 # select random building next to enemy headquarter
                 target = random.choice(self.player.other_player.headquarters.get_sides())
